@@ -13,6 +13,14 @@ set_io -nowarn -pullup 1 b_0 6
 set_io -nowarn -pullup 1 s_1 28
 set_io -nowarn -pullup 1 s_0 38
 
+# Seven-segment display LEDs
+set_io -nowarn seg_a 36
+set_io -nowarn seg_b 43
+set_io -nowarn seg_c 34
+set_io -nowarn seg_d 37
+set_io -nowarn seg_e 31
+set_io -nowarn seg_f 35
+set_io -nowarn seg_g 32
 
 # onboard LEDs for debugging
 set_io -nowarn led_r	41
