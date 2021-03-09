@@ -13,3 +13,7 @@ set_io -nowarn -pullup 1 gpio_3 3
 set_io -nowarn -pullup 1 gpio_4 4
 set_io -nowarn -pullup 1 gpio_44 44
 set_io -nowarn -pullup 1 gpio_6 6
+
+# Push button switches
+set_io -nowarn -pullup 1 gpio_28 28
+set_io -nowarn -pullup 1 gpio_38 38
