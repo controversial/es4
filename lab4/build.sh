@@ -1,5 +1,7 @@
 # Execute like: PROGRAM_NAME=alu_test ./build.sh
 echo "Building with ${PROGRAM_NAME}"
+# Clean
+rm *.json *.asc *.bin *.cf
 
 # Simulate
 ghdl -a *.vhdl
