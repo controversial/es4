@@ -2,3 +2,5 @@
 *.bin
 *.asc
 *.json
+
+.DS_Store
