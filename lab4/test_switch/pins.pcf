@@ -1,0 +1,15 @@
+# The LED pins are using the current controlled outputs
+# and are negative logic (write a 0 to turn on).
+set_io -nowarn led_r	41
+set_io -nowarn led_g	39
+set_io -nowarn led_b	40
+
+# DP switches
+set_io -nowarn -pullup 1 gpio_2 2
+set_io -nowarn -pullup 1 gpio_46 46
+set_io -nowarn -pullup 1 gpio_47 47
+set_io -nowarn -pullup 1 gpio_45 45
+set_io -nowarn -pullup 1 gpio_3 3
+set_io -nowarn -pullup 1 gpio_4 4
+set_io -nowarn -pullup 1 gpio_44 44
+set_io -nowarn -pullup 1 gpio_6 6
