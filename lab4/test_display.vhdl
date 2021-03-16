@@ -1,3 +1,9 @@
+-- This test program for the seven-segment display checks that everything is wired up properly by
+-- illuminating every other segment, and flipping which are illuminated when a button is pressed.
+
+-- This hopefully allows us to do identify if any segments are disconnected or are connected to the
+-- wrong pin.
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 
