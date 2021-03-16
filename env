@@ -1,0 +1,4 @@
+# Use "source env" before running anything else
+
+export GHDL_PREFIX="/Users/luke/Developer/es4/fpga-toolchain/lib/ghdl"
+export PATH="/Users/luke/Developer/es4/fpga-toolchain/bin:${PATH}"
