@@ -9,7 +9,7 @@ entity top is
 end top;
 
 architecture synth of top is
-  component HSOSC is
+  component SB_HFOSC is
     generic (
       CLKHF_DIV : String := "0b00" -- Divide 48MHz clock by 2ˆN (0-3)
     );
@@ -24,7 +24,7 @@ architecture synth of top is
   signal counter: unsigned(25 downto 0);
 begin
 
-  osc: HSOSC
+  osc: SB_HFOSC
   generic map(CLKHF_DIV => "0b00")
   port map(
     CLKHFPU => '1',
