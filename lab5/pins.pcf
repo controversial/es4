@@ -1,0 +1,4 @@
+# onboard LEDs for debugging
+set_io -nowarn led_r	41
+set_io -nowarn led_g	39
+set_io -nowarn led_b	40
