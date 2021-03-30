@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity clock_test is
+entity test_display is
   port(
     seg_a: out std_logic;
     seg_b: out std_logic;
@@ -15,9 +15,9 @@ entity clock_test is
     display_1: out std_logic;
     display_2: out std_logic
   );
-end clock_test;
+end test_display;
 
-architecture synth of clock_test is
+architecture synth of test_display is
   component SB_HFOSC is
     generic (
       CLKHF_DIV : String := "0b00" -- Divide 48MHz clock by 2ˆN (0-3)
