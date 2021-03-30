@@ -1,7 +1,10 @@
-# onboard LEDs for debugging
-set_io -nowarn led_r	41
-set_io -nowarn led_g	39
-set_io -nowarn led_b	40
+# DP switches
+set_io -nowarn -pullup 1 inp_5 28
+set_io -nowarn -pullup 1 inp_4 38
+set_io -nowarn -pullup 1 inp_3 42
+set_io -nowarn -pullup 1 inp_2 36
+set_io -nowarn -pullup 1 inp_1 43
+set_io -nowarn -pullup 1 inp_0 34
 
 # Seven-segment display LEDs
 set_io -nowarn seg_a 9
@@ -14,3 +17,8 @@ set_io -nowarn seg_g 12
 
 set_io -nowarn display_1 27
 set_io -nowarn display_2 26
+
+# onboard LEDs for debugging
+set_io -nowarn led_r	41
+set_io -nowarn led_g	39
+set_io -nowarn led_b	40
