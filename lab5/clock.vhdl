@@ -4,21 +4,16 @@ use IEEE.numeric_std.all;
 
 entity clock_test is
   port(
-    seg_1a: out std_logic;
-    seg_1b: out std_logic;
-    seg_1c: out std_logic;
-    seg_1d: out std_logic;
-    seg_1e: out std_logic;
-    seg_1f: out std_logic;
-    seg_1g: out std_logic;
+    seg_a: out std_logic;
+    seg_b: out std_logic;
+    seg_c: out std_logic;
+    seg_d: out std_logic;
+    seg_e: out std_logic;
+    seg_f: out std_logic;
+    seg_g: out std_logic;
 
-    seg_2a: out std_logic;
-    seg_2b: out std_logic;
-    seg_2c: out std_logic;
-    seg_2d: out std_logic;
-    seg_2e: out std_logic;
-    seg_2f: out std_logic;
-    seg_2g: out std_logic
+    display_1: out std_logic;
+    display_2: out std_logic
   );
 end clock_test;
 
@@ -48,21 +43,17 @@ begin
   process(clk) begin
     if rising_edge(clk) then
       counter <= counter + 1;
-      seg_1a <= counter(25);
-      seg_1b <= not counter(25);
-      seg_1c <= counter(25);
-      seg_1d <= not counter(25);
-      seg_1e <= counter(25);
-      seg_1f <= not counter(25);
-      seg_1g <= counter(25);
 
-      seg_2a <= not counter(25);
-      seg_2b <= counter(25);
-      seg_2c <= not counter(25);
-      seg_2d <= counter(25);
-      seg_2e <= not counter(25);
-      seg_2f <= counter(25);
-      seg_2g <= not counter(25);
+      display_1 <= counter(24);
+      display_2 <= not counter(24);
+
+      seg_a <= counter(25);
+      seg_b <= not counter(25);
+      seg_c <= counter(25);
+      seg_d <= not counter(25);
+      seg_e <= counter(25);
+      seg_f <= not counter(25);
+      seg_g <= counter(25);
     end if;
   end process;
 end;
