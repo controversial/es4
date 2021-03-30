@@ -2,13 +2,27 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity top is
+entity clock_test is
   port(
-    led_r: out std_logic
-  );
-end top;
+    seg_1a: out std_logic;
+    seg_1b: out std_logic;
+    seg_1c: out std_logic;
+    seg_1d: out std_logic;
+    seg_1e: out std_logic;
+    seg_1f: out std_logic;
+    seg_1g: out std_logic;
 
-architecture synth of top is
+    seg_2a: out std_logic;
+    seg_2b: out std_logic;
+    seg_2c: out std_logic;
+    seg_2d: out std_logic;
+    seg_2e: out std_logic;
+    seg_2f: out std_logic;
+    seg_2g: out std_logic
+  );
+end clock_test;
+
+architecture synth of clock_test is
   component SB_HFOSC is
     generic (
       CLKHF_DIV : String := "0b00" -- Divide 48MHz clock by 2ˆN (0-3)
@@ -34,7 +48,21 @@ begin
   process(clk) begin
     if rising_edge(clk) then
       counter <= counter + 1;
-      led_r <= counter(25);
+      seg_1a <= counter(25);
+      seg_1b <= not counter(25);
+      seg_1c <= counter(25);
+      seg_1d <= not counter(25);
+      seg_1e <= counter(25);
+      seg_1f <= not counter(25);
+      seg_1g <= counter(25);
+
+      seg_2a <= not counter(25);
+      seg_2b <= counter(25);
+      seg_2c <= not counter(25);
+      seg_2d <= counter(25);
+      seg_2e <= not counter(25);
+      seg_2f <= counter(25);
+      seg_2g <= not counter(25);
     end if;
   end process;
 end;

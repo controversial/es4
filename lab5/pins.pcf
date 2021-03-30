@@ -2,3 +2,20 @@
 set_io -nowarn led_r	41
 set_io -nowarn led_g	39
 set_io -nowarn led_b	40
+
+# Seven-segment display LEDs
+set_io -nowarn seg_1a 2
+set_io -nowarn seg_1b 46
+set_io -nowarn seg_1c 47
+set_io -nowarn seg_1d 45
+set_io -nowarn seg_1e 48
+set_io -nowarn seg_1f 3
+set_io -nowarn seg_1g 4
+
+set_io -nowarn seg_2a 9
+set_io -nowarn seg_2b 11
+set_io -nowarn seg_2c 18
+set_io -nowarn seg_2d 19
+set_io -nowarn seg_2e 13
+set_io -nowarn seg_2f 21
+set_io -nowarn seg_2g 12
