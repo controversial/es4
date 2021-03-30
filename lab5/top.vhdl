@@ -37,6 +37,7 @@ architecture synth of top is
     );
   end component;
   signal clk: std_logic;
+  signal counter: unsigned(23 downto 0);
 
   -- Dual digit decimal driver
   component dddd is
@@ -49,7 +50,6 @@ architecture synth of top is
   signal value : unsigned(5 downto 0);
   signal tensdigit_segments : std_logic_vector(6 downto 0);
   signal onesdigit_segments : std_logic_vector(6 downto 0);
-  signal display_tens : std_logic := '0';
 begin
   -- Initialize clock
   osc: SB_HFOSC
@@ -64,14 +64,13 @@ begin
   DDDD_1 : dddd port map(value => value, tensdigit => tensdigit_segments, onesdigit => onesdigit_segments);
 
   -- Hook up seven-bit number to seven segments
-  display_1 <= display_tens;
-  display_2 <= not display_tens;
   process(clk) begin
     if rising_edge(clk) then
-      -- Display either ones digit or tens digit depending on which display is powered
-      -- Note: if we have display_tens = '1', that means it's about to flip to zero, so we should
-      --       display the ones digit, not the tens digit.
-      if display_tens = '1' then
+      counter <= counter + 1;
+      display_1 <= counter(18);
+      display_2 <= not counter(18);
+
+      if counter(18) = '0' then
         seg_a <= onesdigit_segments(6);
         seg_b <= onesdigit_segments(5);
         seg_c <= onesdigit_segments(4);
@@ -88,8 +87,6 @@ begin
         seg_f <= tensdigit_segments(1);
         seg_g <= tensdigit_segments(0);
       end if;
-      -- Flip which display is powered
-      display_tens <= not display_tens;
     end if;
   end process;
 end;
