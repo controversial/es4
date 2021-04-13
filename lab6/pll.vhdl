@@ -16,7 +16,7 @@ architecture synth of pll is
     generic (
       -- 48 MHz -> 25.125 MHz (480p)
       FEEDBACK_PATH : String := "SIMPLE";
-      DIVR : unsigned(3 downto 0) := "0011";
+      DIVR : unsigned(3 downto 0) := "0000";
       DIVF : unsigned(6 downto 0) := "1000010";
       DIVQ : unsigned(2 downto 0) := "101";
       FILTER_RANGE : unsigned(2 downto 0) := "001"
