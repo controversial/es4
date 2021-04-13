@@ -1,0 +1,10 @@
+set_io red1 37
+set_io red0 31
+set_io grn1 35
+set_io grn0 32
+set_io blu1 27
+set_io blu0 26
+set_io hsync 25
+set_io vsync 23
+
+set_io clk 12
