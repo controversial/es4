@@ -7,4 +7,4 @@ set_io blu0 26
 set_io hsync 25
 set_io vsync 23
 
-set_io clk 12
+set_io clk 20
