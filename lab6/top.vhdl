@@ -22,21 +22,25 @@ architecture synth of top is
       hsync, vsync : out std_logic
     );
   end component;
+
+  signal clk_pxl : std_logic;
+  signal row, col : unsigned(9 downto 0);
 begin
   vga_driver: vga port map(
     clk => clk,
-    rgb => "000000",
-    clk_pxl => vsync,
-    -- row => ,
-    -- col => ,
-    -- Pins of VGA
+    rgb => "110000",
+    clk_pxl => clk_pxl,
+    row => row,
+    col => col,
+
+    -- Outputs to pins of VGA breakout
     red1 => red1,
     red0 => red0,
     grn1 => grn1,
     grn0 => grn0,
     blu1 => blu1,
     blu0 => blu0,
-    hsync => hsync
-    -- vsync =>
+    hsync => hsync,
+    vsync => vsync
   );
 end;
