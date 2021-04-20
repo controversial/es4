@@ -47,8 +47,8 @@ begin
     end if;
   end process;
 
-  hsync <= '1' when col_counter < 96 else '0';
-  vsync <= '1' when row_counter < 2 else '0';
+  hsync <= '0' when col_counter < 96 else '1';
+  vsync <= '0' when row_counter < 2 else '1';
 
   -- Row and col encode pixel positions, only in the visible area
   row_visible <= '1' when ((row_counter >= 2 + 33) and (row_counter < 2 + 33 + 480)) else '0';
