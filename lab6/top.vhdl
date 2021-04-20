@@ -25,10 +25,11 @@ architecture synth of top is
 
   signal clk_pxl : std_logic;
   signal row, col : unsigned(9 downto 0);
+  signal rgb : std_logic_vector(5 downto 0);
 begin
   vga_driver: vga port map(
     clk => clk,
-    rgb => "110000",
+    rgb => rgb,
     clk_pxl => clk_pxl,
     row => row,
     col => col,
@@ -43,4 +44,6 @@ begin
     hsync => hsync,
     vsync => vsync
   );
+
+  rgb <= "110000" when row < 320 else "000011";
 end;

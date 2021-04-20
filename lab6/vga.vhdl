@@ -37,12 +37,16 @@ begin
   );
 
   process(clk_pxl) begin
-    if rising_edge(clk) then
-      if col_counter < (96 + 48 + 640 + 16) then
-        col_counter <= col_counter + 1;
-      else
+    if rising_edge(clk_pxl) then
+      if col_counter = (96 + 48 + 640 + 16 - 1) then
         col_counter <= "0000000000";
-        row_counter <= row_counter + 1 when row_counter < (2 + 33 + 480 + 10) else "0000000000";
+        if row_counter = (2 + 33 + 480 + 10 - 1) then
+          row_counter <= "0000000000";
+        else
+          row_counter <= row_counter + 1;
+        end if;
+      else
+        col_counter <= col_counter + 1;
       end if;
     end if;
   end process;
