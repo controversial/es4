@@ -30,6 +30,18 @@ architecture synth of vga is
   signal row_counter : unsigned(9 downto 0) := "0000000000";
   signal row_visible : std_logic;
   signal col_visible : std_logic;
+
+  -- horizontal timings given in pixels
+  constant HORIZ_SYNC         : integer := 96;
+  constant HORIZ_BACK_PORCH   : integer := 48;
+  constant HORIZ_VISIBLE_AREA : integer := 640;
+  constant HORIZ_FRONT_PORCH  : integer := 16;
+
+  -- vertical timings given in lines
+  constant VERT_SYNC         : integer := 2;
+  constant VERT_BACK_PORCH   : integer := 33;
+  constant VERT_VISIBLE_AREA : integer := 480;
+  constant VERT_FRONT_PORCH  : integer := 10;
 begin
   pll1: pll port map(
     clk_in => clk,
@@ -38,9 +50,9 @@ begin
 
   process(clk_pxl) begin
     if rising_edge(clk_pxl) then
-      if col_counter = (96 + 48 + 640 + 16 - 1) then
+      if col_counter = (HORIZ_SYNC + HORIZ_BACK_PORCH + HORIZ_VISIBLE_AREA + HORIZ_FRONT_PORCH - 1) then
         col_counter <= "0000000000";
-        if row_counter = (2 + 33 + 480 + 10 - 1) then
+        if row_counter = (VERT_SYNC + VERT_BACK_PORCH + VERT_VISIBLE_AREA + VERT_FRONT_PORCH - 1) then
           row_counter <= "0000000000";
         else
           row_counter <= row_counter + 1;
@@ -51,15 +63,15 @@ begin
     end if;
   end process;
 
-  hsync <= '0' when col_counter < 96 else '1';
-  vsync <= '0' when row_counter < 2 else '1';
+  hsync <= '0' when col_counter < HORIZ_SYNC else '1';
+  vsync <= '0' when row_counter < VERT_SYNC else '1';
 
   -- Row and col encode pixel positions, only in the visible area
-  row_visible <= '1' when ((row_counter >= 2 + 33) and (row_counter < 2 + 33 + 480)) else '0';
-  col_visible <= '1' when ((col_counter >= 96 + 48) and (col_counter < 96 + 48 + 640)) else '0';
+  col_visible <= '1' when ((col_counter >= HORIZ_SYNC + HORIZ_BACK_PORCH) and (col_counter < HORIZ_SYNC + HORIZ_BACK_PORCH + HORIZ_VISIBLE_AREA)) else '0';
+  row_visible <= '1' when ((row_counter >= VERT_SYNC + VERT_BACK_PORCH) and (row_counter < VERT_SYNC + VERT_BACK_PORCH + VERT_VISIBLE_AREA)) else '0';
 
-  row <= row_counter - (2 + 33) when row_visible else "0000000000";
-  col <= col_counter - (96 + 48) when col_visible else "0000000000";
+  col <= col_counter - (HORIZ_SYNC + HORIZ_BACK_PORCH) when col_visible else "0000000000";
+  row <= row_counter - (VERT_SYNC + VERT_BACK_PORCH) when row_visible else "0000000000";
 
   -- Unpack individual pixel values from 6-bit vector
   red1 <= rgb(5) when row_visible and col_visible else '0';
