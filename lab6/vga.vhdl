@@ -50,6 +50,16 @@ begin
     clk_out => clk_pxl
   );
 
+  hsync <= '0' when col_counter < HORIZ_SYNC else '1';
+  vsync <= '0' when row_counter < VERT_SYNC else '1';
+
+  -- Row and col encode pixel positions, only in the visible area
+  col_visible <= '1' when ((col_counter >= HORIZ_SYNC + HORIZ_BACK_PORCH) and (col_counter < HORIZ_TOTAL - HORIZ_FRONT_PORCH)) else '0';
+  row_visible <= '1' when ((row_counter >= VERT_SYNC + VERT_BACK_PORCH) and (row_counter < VERT_TOTAL - VERT_FRONT_PORCH)) else '0';
+
+  col <= col_counter - (HORIZ_SYNC + HORIZ_BACK_PORCH) when col_visible else "0000000000";
+  row <= row_counter - (VERT_SYNC + VERT_BACK_PORCH) when row_visible else "0000000000";
+
   process(clk_pxl) begin
     if rising_edge(clk_pxl) then
       if col_counter < (HORIZ_TOTAL - 1) then
@@ -63,23 +73,15 @@ begin
         end if;
       end if;
     end if;
+
+    if falling_edge(clk_pxl) then
+      -- Unpack individual pixel values from 6-bit vector
+      red1 <= rgb(5) when row_visible and col_visible else '0';
+      red0 <= rgb(4) when row_visible and col_visible else '0';
+      grn1 <= rgb(3) when row_visible and col_visible else '0';
+      grn0 <= rgb(2) when row_visible and col_visible else '0';
+      blu1 <= rgb(1) when row_visible and col_visible else '0';
+      blu0 <= rgb(0) when row_visible and col_visible else '0';
+    end if;
   end process;
-
-  hsync <= '0' when col_counter < HORIZ_SYNC else '1';
-  vsync <= '0' when row_counter < VERT_SYNC else '1';
-
-  -- Row and col encode pixel positions, only in the visible area
-  col_visible <= '1' when ((col_counter >= HORIZ_SYNC + HORIZ_BACK_PORCH) and (col_counter < HORIZ_TOTAL - HORIZ_FRONT_PORCH)) else '0';
-  row_visible <= '1' when ((row_counter >= VERT_SYNC + VERT_BACK_PORCH) and (row_counter < VERT_TOTAL - VERT_FRONT_PORCH)) else '0';
-
-  col <= col_counter - (HORIZ_SYNC + HORIZ_BACK_PORCH) when col_visible else "0000000000";
-  row <= row_counter - (VERT_SYNC + VERT_BACK_PORCH) when row_visible else "0000000000";
-
-  -- Unpack individual pixel values from 6-bit vector
-  red1 <= rgb(5) when row_visible and col_visible else '0';
-  red0 <= rgb(4) when row_visible and col_visible else '0';
-  grn1 <= rgb(3) when row_visible and col_visible else '0';
-  grn0 <= rgb(2) when row_visible and col_visible else '0';
-  blu1 <= rgb(1) when row_visible and col_visible else '0';
-  blu0 <= rgb(0) when row_visible and col_visible else '0';
 end;
