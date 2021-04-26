@@ -33,9 +33,9 @@ architecture synth of vga is
 
   -- horizontal timings given in pixels
   constant HORIZ_SYNC         : integer := 96;
-  constant HORIZ_BACK_PORCH   : integer := 48;
+  constant HORIZ_BACK_PORCH   : integer := 40;
   constant HORIZ_VISIBLE_AREA : integer := 640;
-  constant HORIZ_FRONT_PORCH  : integer := 16;
+  constant HORIZ_FRONT_PORCH  : integer := 24;
 
   -- vertical timings given in lines
   constant VERT_SYNC         : integer := 2;
