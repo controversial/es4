@@ -36,12 +36,14 @@ architecture synth of vga is
   constant HORIZ_BACK_PORCH   : integer := 40;
   constant HORIZ_VISIBLE_AREA : integer := 640;
   constant HORIZ_FRONT_PORCH  : integer := 24;
+  constant HORIZ_TOTAL        : integer := HORIZ_SYNC + HORIZ_BACK_PORCH + HORIZ_VISIBLE_AREA + HORIZ_FRONT_PORCH;
 
   -- vertical timings given in lines
   constant VERT_SYNC         : integer := 2;
   constant VERT_BACK_PORCH   : integer := 33;
   constant VERT_VISIBLE_AREA : integer := 480;
   constant VERT_FRONT_PORCH  : integer := 10;
+  constant VERT_TOTAL        : integer := VERT_SYNC + VERT_BACK_PORCH + VERT_VISIBLE_AREA + VERT_FRONT_PORCH;
 begin
   pll1: pll port map(
     clk_in => clk,
@@ -50,15 +52,15 @@ begin
 
   process(clk_pxl) begin
     if rising_edge(clk_pxl) then
-      if col_counter = (HORIZ_SYNC + HORIZ_BACK_PORCH + HORIZ_VISIBLE_AREA + HORIZ_FRONT_PORCH - 1) then
-        col_counter <= "0000000000";
-        if row_counter = (VERT_SYNC + VERT_BACK_PORCH + VERT_VISIBLE_AREA + VERT_FRONT_PORCH - 1) then
-          row_counter <= "0000000000";
-        else
-          row_counter <= row_counter + 1;
-        end if;
-      else
+      if col_counter < (HORIZ_TOTAL - 1) then
         col_counter <= col_counter + 1;
+      else
+        col_counter <= "0000000000";
+        if row_counter < (VERT_TOTAL - 1) then
+          row_counter <= row_counter + 1;
+        else
+          row_counter <= "0000000000";
+        end if;
       end if;
     end if;
   end process;
@@ -67,8 +69,8 @@ begin
   vsync <= '0' when row_counter < VERT_SYNC else '1';
 
   -- Row and col encode pixel positions, only in the visible area
-  col_visible <= '1' when ((col_counter >= HORIZ_SYNC + HORIZ_BACK_PORCH) and (col_counter < HORIZ_SYNC + HORIZ_BACK_PORCH + HORIZ_VISIBLE_AREA)) else '0';
-  row_visible <= '1' when ((row_counter >= VERT_SYNC + VERT_BACK_PORCH) and (row_counter < VERT_SYNC + VERT_BACK_PORCH + VERT_VISIBLE_AREA)) else '0';
+  col_visible <= '1' when ((col_counter >= HORIZ_SYNC + HORIZ_BACK_PORCH) and (col_counter < HORIZ_TOTAL - HORIZ_FRONT_PORCH)) else '0';
+  row_visible <= '1' when ((row_counter >= VERT_SYNC + VERT_BACK_PORCH) and (row_counter < VERT_TOTAL - VERT_FRONT_PORCH)) else '0';
 
   col <= col_counter - (HORIZ_SYNC + HORIZ_BACK_PORCH) when col_visible else "0000000000";
   row <= row_counter - (VERT_SYNC + VERT_BACK_PORCH) when row_visible else "0000000000";
