@@ -45,5 +45,5 @@ begin
     vsync => vsync
   );
 
-  rgb <= "110000" when row < 320 else "000011";
+  rgb <= row(5) & row(5) & col(5) & col(5) & (row(5) xor col(5)) & (row(5) xor col(5));
 end;
