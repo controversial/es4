@@ -25,7 +25,9 @@ architecture synth of top is
 
   signal clk_pxl : std_logic;
   signal row, col : unsigned(9 downto 0);
-  signal rgb : std_logic_vector(5 downto 0);
+  signal rgb : std_logic_vector(5 downto 0) := "000000";
+
+  signal frame_count : unsigned(17 downto 0); -- 2^18 frames > 216000 frames = 3600 seconds = 1 hour
 begin
   vga_driver: vga port map(
     clk => clk,
@@ -45,5 +47,11 @@ begin
     vsync => vsync
   );
 
-  rgb <= row(5) & row(5) & col(5) & col(5) & (row(5) xor col(5)) & (row(5) xor col(5));
+  process(clk_pxl) begin
+    -- Run once per frame: check that we're at a specific coordinate
+    if rising_edge(clk_pxl) and row = 1 and col = 1 then
+      frame_count <= frame_count + 1;
+    end if;
+  end process;
+  rgb <= "110000" when frame_count(5) = '1' else "001100";
 end;
