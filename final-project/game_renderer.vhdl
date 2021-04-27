@@ -12,6 +12,9 @@ entity game_renderer is
 end game_renderer;
 
 architecture synth of game_renderer is
+  signal board_row, board_col : unsigned(5 downto 0);
+
+  -- Elements to render
   signal border : std_logic := '0';
   signal debug_grid : std_logic := '0';
 begin
@@ -21,9 +24,14 @@ begin
                   or (col >= 608 and col <= 609 and row >= 63 and row <= 449)
             else '0';
   debug_grid <= '1' when row(3 downto 0) = "0000" or col(3 downto 0) = "0000" else '0';
+
+  board_row <= row(9 downto 4) - 4;
+  board_col <= col(9 downto 4) - 2;
+
   -- Set pixels based on row, col, and frame count
 
-  rgb <= "111111" when border else
+  rgb <= "110000" when (board_row = 2 and board_col = 5) else
+         "111111" when border else
          "000011" when debug_grid else
          "000000";
 end;
