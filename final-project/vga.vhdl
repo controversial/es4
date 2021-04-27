@@ -54,21 +54,19 @@ begin
   vsync <= '0' when row_counter < VERT_SYNC else '1';
 
   -- Row and col encode pixel positions, only in the visible area
-  col_visible <= '1' when ((col_counter >= HORIZ_SYNC + HORIZ_BACK_PORCH) and (col_counter < HORIZ_TOTAL - HORIZ_FRONT_PORCH)) else '0';
-  row_visible <= '1' when ((row_counter >= VERT_SYNC + VERT_BACK_PORCH) and (row_counter < VERT_TOTAL - VERT_FRONT_PORCH)) else '0';
+  col_visible <= '1' when ((col_counter >= HORIZ_SYNC + HORIZ_BACK_PORCH) and (col_counter < HORIZ_SYNC + HORIZ_BACK_PORCH + HORIZ_VISIBLE_AREA)) else '0';
+  row_visible <= '1' when ((row_counter >= VERT_SYNC + VERT_BACK_PORCH) and (row_counter < VERT_SYNC + VERT_BACK_PORCH + VERT_VISIBLE_AREA)) else '0';
 
   col <= col_counter - (HORIZ_SYNC + HORIZ_BACK_PORCH) when col_visible else "0000000000";
   row <= row_counter - (VERT_SYNC + VERT_BACK_PORCH) when row_visible else "0000000000";
 
   process(clk_pxl) begin
     if rising_edge(clk_pxl) then
-      if col_counter < (HORIZ_TOTAL - 1) then
-        col_counter <= col_counter + 1;
-      else
+      col_counter <= col_counter + 1;
+      if (col_counter = HORIZ_TOTAL) then
         col_counter <= "0000000000";
-        if row_counter < (VERT_TOTAL - 1) then
-          row_counter <= row_counter + 1;
-        else
+        row_counter <= row_counter + 1;
+        if (row_counter = VERT_TOTAL) then
           row_counter <= "0000000000";
         end if;
       end if;
