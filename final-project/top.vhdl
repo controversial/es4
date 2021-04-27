@@ -26,22 +26,22 @@ architecture synth of top is
   component game_renderer is
     port(
       row, col : in unsigned(9 downto 0);
-      frame_count : in unsigned(17 downto 0);
 
       rgb : out std_logic_vector(5 downto 0)
     );
   end component;
 
-  signal clk_pxl : std_logic;
+  signal pixel_clock : std_logic;
   signal row, col : unsigned(9 downto 0);
   signal rgb : std_logic_vector(5 downto 0) := "000000";
 
-  signal frame_count : unsigned(17 downto 0); -- 2^18 frames > 216000 frames = 3600 seconds = 1 hour
+  signal frame_count : unsigned(4 downto 0);
+  signal game_clock : std_logic;
 begin
   vga_driver: vga port map(
     clk => clk,
     rgb => rgb,
-    clk_pxl => clk_pxl,
+    clk_pxl => pixel_clock,
     row => row,
     col => col,
 
@@ -56,15 +56,16 @@ begin
     vsync => vsync
   );
 
-  process(clk_pxl) begin
+  process(pixel_clock) begin
     -- Run once per frame: check that we're at a specific coordinate
-    if rising_edge(clk_pxl) and row = 1 and col = 1 then
+    if rising_edge(pixel_clock) and row = 1 and col = 1 then
       frame_count <= frame_count + 1;
     end if;
   end process;
+  -- Every 32 frames, we update the game
+  game_clock <= '1' when frame_count = "11111" else '0';
 
   game_render: game_renderer port map(
-    frame_count => frame_count,
     row => row,
     col => col,
     rgb => rgb

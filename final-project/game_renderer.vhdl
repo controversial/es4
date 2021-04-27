@@ -5,8 +5,7 @@ use IEEE.numeric_std.all;
 entity game_renderer is
   port(
     row, col : in unsigned(9 downto 0);
-    frame_count : in unsigned(17 downto 0);
-
+    -- TODO: get game state
     rgb : out std_logic_vector(5 downto 0)
   );
 end game_renderer;
