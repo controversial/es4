@@ -5,8 +5,7 @@ use IEEE.numeric_std.all;
 entity game_logic is
   port(
     btn_up, btn_down, btn_right, btn_left : in std_logic;
-    clk : in std_logic; game_clock : in std_logic;
-
+    clk : in std_logic; game_clock : in std_logic
   );
 end game_logic;
 
