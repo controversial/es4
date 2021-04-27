@@ -34,6 +34,14 @@ architecture synth of top is
     );
   end component;
 
+  component game_logic is
+    port(
+      btn_up, btn_down, btn_right, btn_left : in std_logic;
+      clk : in std_logic; game_clock : in std_logic;
+      is_up, is_down, is_left, is_right : out std_logic
+    );
+  end component;
+
   signal pixel_clock : std_logic;
   signal row, col : unsigned(9 downto 0);
   signal rgb : std_logic_vector(5 downto 0) := "000000";
@@ -42,21 +50,16 @@ architecture synth of top is
   signal game_clock : std_logic;
 begin
   vga_driver: vga port map(
-    clk => clk,
-    rgb => rgb,
-    clk_pxl => pixel_clock,
-    row => row,
-    col => col,
+    clk => clk, -- input 12M
+
+    clk_pxl => pixel_clock, -- output clock per pixel
+    row => row, col => col, -- output current block pos
+
+    rgb => rgb, -- input RGB
 
     -- Outputs to pins of VGA breakout
-    red1 => red1,
-    red0 => red0,
-    grn1 => grn1,
-    grn0 => grn0,
-    blu1 => blu1,
-    blu0 => blu0,
-    hsync => hsync,
-    vsync => vsync
+    red1 => red1, red0 => red0, grn1 => grn1, grn0 => grn0, blu1 => blu1, blu0 => blu0,
+    hsync => hsync, vsync => vsync
   );
 
   process(pixel_clock) begin
@@ -72,5 +75,10 @@ begin
     row => row,
     col => col,
     rgb => rgb
+  );
+
+  game_logic_a : game_logic port map(
+    btn_up => not btn_up, btn_down => not btn_down, btn_left => not btn_left, btn_right => not btn_right,
+    clk => clk, game_clock => game_clock
   );
 end;
