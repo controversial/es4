@@ -15,9 +15,9 @@ architecture synth of game_renderer is
   signal border : std_logic := '0';
   signal debug_grid : std_logic := '0';
 begin
-  border <= '1' when (row >= 63 and row <= 64 and col >= 32 and col <= 609)
-                  or (row >= 448 and row <= 449 and col >= 32 and col <= 609)
-                  or (col >= 31 and col <= 32 and row >= 63 and row <= 449)
+  border <= '1' when (row >= 62 and row <= 63 and col >= 30 and col <= 609)
+                  or (row >= 448 and row <= 449 and col >= 30 and col <= 609)
+                  or (col >= 30 and col <= 31 and row >= 62 and row <= 449)
                   or (col >= 608 and col <= 609 and row >= 63 and row <= 449)
             else '0';
   debug_grid <= '1' when row(3 downto 0) = "0000" or col(3 downto 0) = "0000" else '0';
