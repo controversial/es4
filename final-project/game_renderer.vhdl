@@ -6,10 +6,7 @@ entity game_renderer is
   port(
     row, col : in unsigned(9 downto 0);
     -- TODO: get game state
-    rgb : out std_logic_vector(5 downto 0);
-
-
-    a, b, c, d : in std_logic
+    rgb : out std_logic_vector(5 downto 0)
   );
 end game_renderer;
 
@@ -32,7 +29,7 @@ begin
 
   -- Set pixels based on row, col, and frame count
 
-  rgb <= "110000" when (board_row = 0 and board_col = 0 and a = '1') or (board_row = 0 and board_col = 1 and b = '1') or (board_row = 0 and board_col = 2 and c = '1') or (board_row = 0 and board_col = 3 and d = '1') else
+  rgb <= "110000" when (board_row = 2 and board_col = 5) else
          "111111" when border else
          "000011" when debug_grid else
          "000000";
