@@ -23,6 +23,15 @@ architecture synth of top is
     );
   end component;
 
+  component game_renderer is
+    port(
+      row, col : in unsigned(9 downto 0);
+      frame_count : in unsigned(17 downto 0);
+
+      rgb : out std_logic_vector(5 downto 0)
+    );
+  end component;
+
   signal clk_pxl : std_logic;
   signal row, col : unsigned(9 downto 0);
   signal rgb : std_logic_vector(5 downto 0) := "000000";
@@ -53,5 +62,11 @@ begin
       frame_count <= frame_count + 1;
     end if;
   end process;
-  rgb <= row(4) & row(4) & col(4) & col(4) & (row(4) xor col(4)) & (row(4) xor col(4));
+
+  game_render: game_renderer port map(
+    frame_count => frame_count,
+    row => row,
+    col => col,
+    rgb => rgb
+  );
 end;
