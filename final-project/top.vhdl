@@ -30,7 +30,8 @@ architecture synth of top is
     port(
       row, col : in unsigned(9 downto 0);
 
-      rgb : out std_logic_vector(5 downto 0)
+      rgb : out std_logic_vector(5 downto 0);
+      a, b, c, d : in std_logic
     );
   end component;
 
@@ -48,6 +49,8 @@ architecture synth of top is
 
   signal frame_count : unsigned(3 downto 0);
   signal game_clock : std_logic;
+
+  signal is_up, is_down, is_left, is_right : std_logic;
 begin
   vga_driver: vga port map(
     clk => clk, -- input 12M
@@ -74,11 +77,17 @@ begin
   game_render: game_renderer port map(
     row => row,
     col => col,
-    rgb => rgb
+    rgb => rgb,
+
+    a => is_up,
+    b => is_down,
+    c => is_left,
+    d => is_right
   );
 
   game_logic_a : game_logic port map(
     btn_up => not btn_up, btn_down => not btn_down, btn_left => not btn_left, btn_right => not btn_right,
-    clk => clk, game_clock => game_clock
+    clk => clk, game_clock => game_clock,
+    is_up => is_up, is_down => is_down, is_left => is_left, is_right => is_right
   );
 end;

@@ -7,6 +7,7 @@ entity game_logic is
     btn_up, btn_down, btn_right, btn_left : in std_logic;
     clk : in std_logic; game_clock : in std_logic;
 
+    is_up, is_down, is_left, is_right : out std_logic
   );
 end game_logic;
 
@@ -23,4 +24,8 @@ begin
     end if;
   end process;
 
+  is_up <= '1' when direction = "00" else '0';
+  is_down <= '1' when direction = "01" else '0';
+  is_left <= '1' when direction = "10" else '0';
+  is_right <= '1' when direction = "11" else '0';
 end;
