@@ -7,4 +7,9 @@ set_io blu0 26
 set_io hsync 25
 set_io vsync 23
 
+set_io -pullup 1 btn_left 2
+set_io -pullup 1 btn_down 46
+set_io -pullup 1 btn_up 47
+set_io -pullup 1 btn_right 45
+
 set_io clk 20

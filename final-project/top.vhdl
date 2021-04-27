@@ -7,6 +7,9 @@ entity top is
     -- VGA signals
     red0, red1, grn0, grn1, blu0, blu1 : out std_logic;
     hsync, vsync : out std_logic;
+
+    btn_up, btn_down, btn_left, btn_right : in std_logic;
+
     clk : in std_logic
   );
 end top;
