@@ -70,9 +70,7 @@ begin
           row_counter <= "0000000000";
         end if;
       end if;
-    end if;
 
-    if falling_edge(clk_pxl) then
       -- Unpack individual pixel values from 6-bit vector
       red1 <= rgb(5) when row_visible and col_visible else '0';
       red0 <= rgb(4) when row_visible and col_visible else '0';
