@@ -71,6 +71,8 @@ architecture synth of top is
   signal rendering_board_row : unsigned(5 downto 0);
   signal rendering_board_col : unsigned(5 downto 0);
   signal rendering_pos : std_logic_vector(11 downto 0);
+
+  signal snake_head_col : unsigned(5 downto 0) := 6d"5";
 begin
   vga_driver: vga port map(
     clk => clk, -- input 12M
@@ -94,11 +96,17 @@ begin
   -- Every 32 frames, we update the game
   game_clock <= '1' when frame_count = "1111" else '0';
 
+  process(game_clock) begin
+    if rising_edge(game_clock) then
+      snake_head_col <= snake_head_col + 6d"1";
+    end if;
+  end process;
+
   snake_queue_inst: snake_queue port map(
     clk => game_clock,
     head => snake_head_pos,
-    next_head => "001011000101", -- (11, 5) -> the square to the right of the snake
-    expanding => '1',
+    next_head => "001011" & std_logic_vector(snake_head_col),
+    expanding => '0',
     bitmap_pos => rendering_pos,
     snake_here => snake_at_rendered_pos
   );
