@@ -5,13 +5,13 @@ use IEEE.numeric_std.all;
 entity game_renderer is
   port(
     row, col : in unsigned(9 downto 0);
-    -- TODO: get game state
-    rgb : out std_logic_vector(5 downto 0)
+    snake_here : in std_logic;
+    rgb : out std_logic_vector(5 downto 0);
+    board_row, board_col : out unsigned(5 downto 0)
   );
 end game_renderer;
 
 architecture synth of game_renderer is
-  signal board_row, board_col : unsigned(5 downto 0);
 
   -- Elements to render
   signal border : std_logic := '0';
@@ -29,7 +29,7 @@ begin
 
   -- Set pixels based on row, col, and frame count
 
-  rgb <= "110000" when (board_row = 2 and board_col = 5) else
+  rgb <= "110000" when snake_here else
          "111111" when border else
          "000011" when debug_grid else
          "000000";

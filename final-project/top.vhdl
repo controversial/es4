@@ -29,8 +29,9 @@ architecture synth of top is
   component game_renderer is
     port(
       row, col : in unsigned(9 downto 0);
-
-      rgb : out std_logic_vector(5 downto 0)
+      snake_here : in std_logic;
+      rgb : out std_logic_vector(5 downto 0);
+      board_row, board_col : out unsigned(5 downto 0)
     );
   end component;
 
@@ -41,12 +42,35 @@ architecture synth of top is
     );
   end component;
 
+  component snake_queue is
+    port(
+      clk : in std_logic;
+      -- Output where the current head is
+      head : out std_logic_vector(11 downto 0);
+      -- Input information about how the snake moves
+      next_head : in std_logic_vector(11 downto 0);
+      expanding : in std_logic;
+      -- Accessing bitmap
+      bitmap_pos : in std_logic_vector(11 downto 0); -- 6-bit row, 6-bit col
+      snake_here : out std_logic
+    );
+  end component;
+
   signal pixel_clock : std_logic;
   signal row, col : unsigned(9 downto 0);
   signal rgb : std_logic_vector(5 downto 0) := "000000";
 
   signal frame_count : unsigned(3 downto 0);
   signal game_clock : std_logic;
+
+  -- signals for snake queue
+  signal snake_head_pos : std_logic_vector(11 downto 0);
+  signal snake_at_rendered_pos : std_logic;
+
+  -- signals for game renderer
+  signal rendering_board_row : unsigned(5 downto 0);
+  signal rendering_board_col : unsigned(5 downto 0);
+  signal rendering_pos : std_logic_vector(11 downto 0);
 begin
   vga_driver: vga port map(
     clk => clk, -- input 12M
@@ -70,13 +94,28 @@ begin
   -- Every 32 frames, we update the game
   game_clock <= '1' when frame_count = "1111" else '0';
 
-  game_render: game_renderer port map(
-    row => row,
-    col => col,
-    rgb => rgb
+  snake_queue_inst: snake_queue port map(
+    clk => game_clock,
+    head => snake_head_pos,
+    next_head => "001011000101", -- (11, 5) -> the square to the right of the snake
+    expanding => '1',
+    bitmap_pos => rendering_pos,
+    snake_here => snake_at_rendered_pos
   );
 
-  game_logic_a : game_logic port map(
+  game_renderer_inst: game_renderer port map(
+    row => row,
+    col => col,
+    rgb => rgb,
+
+    board_row => rendering_board_row,
+    board_col => rendering_board_col,
+
+    snake_here => snake_at_rendered_pos
+  );
+  rendering_pos <= std_logic_vector(rendering_board_row) & std_logic_vector(rendering_board_col);
+
+  game_logic_inst : game_logic port map(
     btn_up => not btn_up, btn_down => not btn_down, btn_left => not btn_left, btn_right => not btn_right,
     clk => clk, game_clock => game_clock
   );
