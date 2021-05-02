@@ -64,7 +64,7 @@ architecture synth of top is
   signal row, col : unsigned(9 downto 0);
   signal rgb : std_logic_vector(5 downto 0) := "000000";
 
-  signal frame_count : unsigned(3 downto 0);
+  signal frame_count : unsigned(2 downto 0);
   signal game_clock : std_logic;
 
   -- signals for snake queue
@@ -98,7 +98,7 @@ begin
     end if;
   end process;
   -- Every 32 frames, we update the game
-  game_clock <= '1' when frame_count = "1111" else '0';
+  game_clock <= '1' when frame_count = "111" else '0';
 
   snake_queue_inst: snake_queue port map(
     mem_clk => pixel_clock,
