@@ -9,7 +9,8 @@ use IEEE.numeric_std.all;
 
 entity snake_queue is
   port(
-    clk : in std_logic;
+    read_clk : in std_logic;
+    update_clk : in std_logic;
     -- Output where the current head is
     head : out std_logic_vector(11 downto 0);
     -- Input information about how the snake moves
@@ -53,21 +54,24 @@ architecture synth of snake_queue is
   );
   signal bitmap_read_addr : integer; -- the address the user wants to access inside the bitmap
 begin
-  -- Current coordinates of head/tail
-  head <= queue(head_addr_q);
-  tail <= queue(tail_addr_q);
-
   -- Find addresses of tail, head, and read address within bitmap
   -- row * 36 + col
   tail_addr_b <= (to_integer(unsigned(tail(11 downto 6))) * 36) + (to_integer(unsigned(tail(5 downto 0))));
   n_head_addr_b <= (to_integer(unsigned(next_head(11 downto 6))) * 36) + (to_integer(unsigned(next_head(5 downto 0))));
-
-  -- Output whether the snake is at the bitmap position we're interested in
   bitmap_read_addr <= (to_integer(unsigned(bitmap_pos(11 downto 6))) * 36) + (to_integer(unsigned(bitmap_pos(5 downto 0))));
-  snake_here <= snake_pos_bitmap(bitmap_read_addr);
 
-  process(clk) is begin
-    if (rising_edge(clk)) then
+  process(read_clk) begin
+    if rising_edge(update_clk) then
+      -- Current coordinates of head/tail
+      head <= queue(head_addr_q);
+      tail <= queue(tail_addr_q);
+      -- Output whether the snake is at the bitmap position we're interested in
+      snake_here <= snake_pos_bitmap(bitmap_read_addr);
+    end if;
+  end process;
+
+  process(update_clk) is begin
+    if rising_edge(update_clk) then
       queue(head_addr_q + 1) <= next_head;
       head_addr_q <= head_addr_q + 1 when head_addr_q <= 863 else 0;
       -- Update bitmap
@@ -79,7 +83,5 @@ begin
         snake_pos_bitmap(tail_addr_b) <= '0';
       end if;
     end if;
-
-    -- update bitmap to hold every snake position
   end process;
 end;

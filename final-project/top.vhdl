@@ -47,7 +47,8 @@ architecture synth of top is
 
   component snake_queue is
     port(
-      clk : in std_logic;
+      read_clk: in std_logic;
+      update_clk : in std_logic;
       -- Output where the current head is
       head : out std_logic_vector(11 downto 0);
       -- Input information about how the snake moves
@@ -100,7 +101,8 @@ begin
   game_clock <= '1' when frame_count = "1111" else '0';
 
   snake_queue_inst: snake_queue port map(
-    clk => game_clock,
+    read_clk => clk,
+    update_clk => game_clock,
     head => snake_head_pos,
     next_head => snake_next_head,
     expanding => '0',
