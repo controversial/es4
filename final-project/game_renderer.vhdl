@@ -31,8 +31,8 @@ begin
 
   -- Set pixels based on row, col, and frame count
 
-  rgb <= "111111" when border else
-         "110000" when snake_here and in_board else
+  rgb <= "001101" when snake_here and in_board else
+         "111111" when border else
          "000001" when debug_grid else
          "000000";
 end;
