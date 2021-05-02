@@ -39,31 +39,26 @@ architecture synth of snake_queue is
   -- row (11 downto 6) and col (5 downto 0) of tail and head
   signal tail : std_logic_vector(11 downto 0);
 --signal head : is defined like this too but it's an output port
+  -- Current addresses tail and “next head” within _b_itmap.
+  signal tail_addr_b: integer;
+  signal n_head_addr_b: integer;
 
   -- Bitmap stores every position the snake inhabits
-  type BITMAP_ROWS is array (integer range <>) of std_logic_vector(0 to 35);
-  signal snake_pos_bitmap : BITMAP_ROWS(0 to 23) := (
+  type BITMAP is array (integer range <>) of std_logic;
+  signal snake_pos_bitmap : BITMAP(0 to 863) := (
     -- these positions correspond to the positions defined as the initial queue values
-    -- row 11 col 2, 3, 4
-    11     => "000111000000000000000000000000000000",
-    others => "000000000000000000000000000000000000"
+    398 => '1',
+    399 => '1',
+    400 => '1',
+    others => '0'
   );
-  signal bitmap_read_row : integer; -- the address the user wants to access inside the bitmap
-  signal bitmap_read_col : integer; -- the address the user wants to access inside the bitmap
-  -- Position of tail and “next head” within bitmap.
-  signal tail_bitmap_row: integer;
-  signal tail_bitmap_col: integer;
-  signal new_head_bitmap_row: integer;
-  signal new_head_bitmap_col: integer;
+  signal bitmap_read_addr : integer; -- the address the user wants to access inside the bitmap
 begin
   -- Find addresses of tail, head, and read address within bitmap
   -- row * 36 + col
-  tail_bitmap_row <= to_integer(unsigned(tail(11 downto 6)));
-  tail_bitmap_col <= to_integer(unsigned(tail(5 downto 0)));
-  new_head_bitmap_row <= to_integer(unsigned(next_head(11 downto 6)));
-  new_head_bitmap_col <= to_integer(unsigned(next_head(5 downto 0)));
-  bitmap_read_row <= to_integer(unsigned(bitmap_pos(11 downto 6)));
-  bitmap_read_col <= to_integer(unsigned(bitmap_pos(5 downto 0)));
+  tail_addr_b <= (to_integer(unsigned(tail(11 downto 6))) * 36) + (to_integer(unsigned(tail(5 downto 0))));
+  n_head_addr_b <= (to_integer(unsigned(next_head(11 downto 6))) * 36) + (to_integer(unsigned(next_head(5 downto 0))));
+  bitmap_read_addr <= (to_integer(unsigned(bitmap_pos(11 downto 6))) * 36) + (to_integer(unsigned(bitmap_pos(5 downto 0))));
 
   process(read_clk) begin
     if rising_edge(update_clk) then
@@ -71,7 +66,7 @@ begin
       head <= queue(head_addr_q);
       tail <= queue(tail_addr_q);
       -- Output whether the snake is at the bitmap position we're interested in
-      snake_here <= snake_pos_bitmap(bitmap_read_row)(bitmap_read_col);
+      snake_here <= snake_pos_bitmap(bitmap_read_addr);
     end if;
   end process;
 
@@ -80,12 +75,12 @@ begin
       queue(head_addr_q + 1) <= next_head;
       head_addr_q <= head_addr_q + 1 when head_addr_q <= 863 else 0;
       -- Update bitmap
-      snake_pos_bitmap(new_head_bitmap_row)(new_head_bitmap_col) <= '1';
+      snake_pos_bitmap(n_head_addr_b) <= '1';
       -- when the snake is "expanding," the tail stays fixed and only the head moves.
       if (expanding = '0') then
         tail_addr_q <= tail_addr_q + 1 when tail_addr_q <= 863 else 0;
         -- Update bitmap
-        snake_pos_bitmap(tail_bitmap_row)(tail_bitmap_col) <= '0';
+        snake_pos_bitmap(tail_addr_b) <= '0';
       end if;
     end if;
   end process;
