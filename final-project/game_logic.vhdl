@@ -13,7 +13,8 @@ entity game_logic is
 end game_logic;
 
 architecture synth of game_logic is
-  signal direction : std_logic_vector(1 downto 0) := "11";
+  type DIRECTION is (NORTH, EAST, SOUTH, WEST);
+  signal snake_direction : DIRECTION := EAST;
   signal snake_head_row : unsigned(5 downto 0);
   signal snake_head_col : unsigned(5 downto 0);
 
@@ -28,19 +29,19 @@ begin
 
   process(clk) begin
     if rising_edge(clk) then
-      if btn_up = '1' then direction <= "00";
-      elsif btn_down = '1' then direction <= "01";
-      elsif btn_left = '1' then direction <= "10";
-      elsif btn_right = '1' then direction <= "11";
+      if btn_up = '1' then snake_direction <= NORTH;
+      elsif btn_down = '1' then snake_direction <= SOUTH;
+      elsif btn_left = '1' then snake_direction <= WEST;
+      elsif btn_right = '1' then snake_direction <= EAST;
       end if;
     end if;
   end process;
 
-  -- Move snake based on direction
-  snake_next_head_row <= snake_head_row - 6d"1" when direction = "00" else
-                         snake_head_row + 6d"1" when direction = "01" else
+  -- Move snake based on its direction
+  snake_next_head_row <= snake_head_row - 6d"1" when snake_direction = NORTH else
+                         snake_head_row + 6d"1" when snake_direction = SOUTH else
                          snake_head_row;
-  snake_next_head_col <= snake_head_col - 6d"1" when direction = "10" else
-                         snake_head_col + 6d"1" when direction = "11" else
+  snake_next_head_col <= snake_head_col - 6d"1" when snake_direction = WEST else
+                         snake_head_col + 6d"1" when snake_direction = EAST else
                          snake_head_col;
 end;
