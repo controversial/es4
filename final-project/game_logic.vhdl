@@ -29,10 +29,10 @@ begin
 
   process(clk) begin
     if rising_edge(clk) then
-      if btn_up = '1' then snake_direction <= NORTH;
-      elsif btn_down = '1' then snake_direction <= SOUTH;
-      elsif btn_left = '1' then snake_direction <= WEST;
-      elsif btn_right = '1' then snake_direction <= EAST;
+      if btn_up = '1' and snake_direction /= SOUTH then snake_direction <= NORTH;
+      elsif btn_down = '1' and snake_direction /= NORTH then snake_direction <= SOUTH;
+      elsif btn_left = '1' and snake_direction /= EAST then snake_direction <= WEST;
+      elsif btn_right = '1' and snake_direction /= WEST then snake_direction <= EAST;
       end if;
     end if;
   end process;
