@@ -8,18 +8,21 @@ entity game_logic is
     clk : in std_logic; game_clock : in std_logic;
 
     snake_head_pos : in std_logic_vector(11 downto 0);
-    snake_next_head : out std_logic_vector(11 downto 0)
+    snake_next_head : out std_logic_vector(11 downto 0);
+
+    food_pos : out std_logic_vector(11 downto 0)
   );
 end game_logic;
 
 architecture synth of game_logic is
   type DIRECTION is (NORTH, EAST, SOUTH, WEST);
   signal snake_direction : DIRECTION := EAST;
-  signal snake_head_row : unsigned(5 downto 0);
-  signal snake_head_col : unsigned(5 downto 0);
 
-  signal snake_next_head_row : unsigned(5 downto 0) := 6d"0";
-  signal snake_next_head_col : unsigned(5 downto 0) := 6d"0";
+  signal snake_head_row, snake_head_col : unsigned(5 downto 0);
+  signal snake_next_head_row, snake_next_head_col : unsigned(5 downto 0) := 6d"0";
+
+  signal food_pos_lfsr : std_logic_vector(10 downto 0) := 11d"1";
+  signal food_row, food_col : unsigned(5 downto 0);
 begin
   -- Unpack row/col of current head pos
   snake_head_row <= unsigned(snake_head_pos(11 downto 6));
@@ -34,6 +37,9 @@ begin
       elsif btn_left = '1' and snake_direction /= EAST then snake_direction <= WEST;
       elsif btn_right = '1' and snake_direction /= WEST then snake_direction <= EAST;
       end if;
+
+      food_pos_lfsr(0) <= food_pos_lfsr(10) xor food_pos_lfsr(9);
+      food_pos_lfsr(10 downto 1) <= food_pos_lfsr(9 downto 0);
     end if;
   end process;
 
@@ -44,4 +50,14 @@ begin
   snake_next_head_col <= snake_head_col - 6d"1" when snake_direction = WEST else
                          snake_head_col + 6d"1" when snake_direction = EAST else
                          snake_head_col;
+
+  -- Generate food positions
+  food_row <= '0' & unsigned(food_pos_lfsr(10 downto 6)) - 5d"24" when unsigned(food_pos_lfsr(10 downto 6)) >= 5d"24" else '0' & unsigned(food_pos_lfsr(10 downto 6));
+  food_col <= unsigned(food_pos_lfsr(5 downto 0)) - 6d"36" when unsigned(food_pos_lfsr(5 downto 0)) >= 6d"36" else unsigned(food_pos_lfsr(5 downto 0));
+
+  process(game_clock) begin
+    if rising_edge(game_clock) then
+      food_pos <= std_logic_vector(food_row) & std_logic_vector(food_col);
+    end if;
+  end process;
 end;

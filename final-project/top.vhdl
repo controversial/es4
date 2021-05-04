@@ -31,7 +31,9 @@ architecture synth of top is
       row, col : in unsigned(9 downto 0);
       snake_here : in std_logic;
       rgb : out std_logic_vector(5 downto 0);
-      board_row, board_col : out unsigned(5 downto 0)
+      board_row, board_col : out unsigned(5 downto 0);
+
+      food_pos : in std_logic_vector(11 downto 0)
     );
   end component;
 
@@ -41,7 +43,9 @@ architecture synth of top is
       clk : in std_logic; game_clock : in std_logic;
 
       snake_head_pos : in std_logic_vector(11 downto 0);
-      snake_next_head : out std_logic_vector(11 downto 0)
+      snake_next_head : out std_logic_vector(11 downto 0);
+
+      food_pos : out std_logic_vector(11 downto 0)
     );
   end component;
 
@@ -77,6 +81,8 @@ architecture synth of top is
   signal rendering_pos : std_logic_vector(11 downto 0);
 
   signal snake_next_head : std_logic_vector(11 downto 0);
+
+  signal food_pos : std_logic_vector(11 downto 0);
 begin
   vga_driver: vga port map(
     clk => clk, -- input 12M
@@ -118,7 +124,9 @@ begin
     board_row => rendering_board_row,
     board_col => rendering_board_col,
 
-    snake_here => snake_at_rendered_pos
+    snake_here => snake_at_rendered_pos,
+
+    food_pos => food_pos
   );
   rendering_pos <= std_logic_vector(rendering_board_row) & std_logic_vector(rendering_board_col);
 
@@ -127,6 +135,8 @@ begin
     clk => clk, game_clock => game_clock,
 
     snake_head_pos => snake_head_pos,
-    snake_next_head => snake_next_head
+    snake_next_head => snake_next_head,
+
+    food_pos => food_pos
   );
 end;
