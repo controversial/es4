@@ -45,7 +45,8 @@ architecture synth of top is
       snake_head_pos : in std_logic_vector(11 downto 0);
       snake_next_head : out std_logic_vector(11 downto 0);
 
-      food_pos : out std_logic_vector(11 downto 0)
+      food_pos : out std_logic_vector(11 downto 0);
+      expanding : out std_logic
     );
   end component;
 
@@ -83,6 +84,7 @@ architecture synth of top is
   signal snake_next_head : std_logic_vector(11 downto 0);
 
   signal food_pos : std_logic_vector(11 downto 0);
+  signal expanding : std_logic;
 begin
   vga_driver: vga port map(
     clk => clk, -- input 12M
@@ -107,7 +109,7 @@ begin
     move_clk => game_clock,
     head => snake_head_pos,
     next_head => snake_next_head,
-    expanding => '0',
+    expanding => expanding,
     bitmap_pos => rendering_pos,
     snake_here => snake_at_rendered_pos
   );
@@ -133,6 +135,8 @@ begin
     snake_head_pos => snake_head_pos,
     snake_next_head => snake_next_head,
 
-    food_pos => food_pos
+    food_pos => food_pos,
+
+    expanding => expanding
   );
 end;

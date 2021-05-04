@@ -10,7 +10,8 @@ entity game_logic is
     snake_head_pos : in std_logic_vector(11 downto 0);
     snake_next_head : out std_logic_vector(11 downto 0);
 
-    food_pos : out std_logic_vector(11 downto 0) := "001100" & "010010" -- center
+    food_pos : out std_logic_vector(11 downto 0) := "001011" & "010010"; -- center
+    expanding : out std_logic := '0'
   );
 end game_logic;
 
@@ -57,8 +58,10 @@ begin
 
   process(game_clock) begin
     if rising_edge(game_clock) then
+      expanding <= '0';
       if snake_head_pos = food_pos then
         food_pos <= std_logic_vector(random_row) & std_logic_vector(random_col);
+        expanding <= '1';
       end if;
     end if;
   end process;
