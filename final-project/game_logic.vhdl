@@ -15,8 +15,8 @@ entity game_logic is
 end game_logic;
 
 architecture synth of game_logic is
-  type DIRECTION is (NORTH, EAST, SOUTH, WEST);
-  signal snake_direction : DIRECTION := EAST;
+  type DIRECTION is (NORTH, EAST, SOUTH, WEST, NONE);
+  signal snake_direction : DIRECTION := NONE;
 
   signal snake_head_row, snake_head_col : unsigned(5 downto 0);
   signal snake_next_head_row, snake_next_head_col : unsigned(5 downto 0) := 6d"0";
@@ -34,7 +34,7 @@ begin
     if rising_edge(clk) then
       if btn_up = '1' and snake_direction /= SOUTH then snake_direction <= NORTH;
       elsif btn_down = '1' and snake_direction /= NORTH then snake_direction <= SOUTH;
-      elsif btn_left = '1' and snake_direction /= EAST then snake_direction <= WEST;
+      elsif btn_left = '1' and snake_direction /= EAST and snake_direction /= NONE then snake_direction <= WEST;
       elsif btn_right = '1' and snake_direction /= WEST then snake_direction <= EAST;
       end if;
 
