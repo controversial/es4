@@ -5,13 +5,20 @@ use IEEE.numeric_std.all;
 entity game_logic is
   port(
     btn_up, btn_down, btn_right, btn_left : in std_logic;
-    clk : in std_logic; game_clock : in std_logic;
+    clk : in std_logic; pixel_clock : in std_logic; game_clock : in std_logic;
 
     snake_head_pos : in std_logic_vector(11 downto 0);
     snake_next_head : out std_logic_vector(11 downto 0);
 
     food_pos : out std_logic_vector(11 downto 0) := "001011" & "010010"; -- center
-    expanding : out std_logic := '0'
+    expanding : out std_logic := '0';
+
+    rendering_board_row : in unsigned(5 downto 0);
+    rendering_board_col : in unsigned(5 downto 0);
+    rendering_in_center : in std_logic;
+    snake_at_rendered_pos : in std_logic;
+
+    game_over : out std_logic := '0'
   );
 end game_logic;
 
@@ -52,7 +59,7 @@ begin
                          snake_head_col + 6d"1" when snake_direction = EAST else
                          snake_head_col;
 
-  -- Generate food positions
+  -- Generate new food when snake eats food
   random_row <= '0' & unsigned(random_pos_lfsr(10 downto 6)) - 5d"24" when unsigned(random_pos_lfsr(10 downto 6)) >= 5d"24" else '0' & unsigned(random_pos_lfsr(10 downto 6));
   random_col <= unsigned(random_pos_lfsr(5 downto 0)) - 6d"36" when unsigned(random_pos_lfsr(5 downto 0)) >= 6d"36" else unsigned(random_pos_lfsr(5 downto 0));
 
@@ -62,6 +69,16 @@ begin
       if snake_head_pos = food_pos then
         food_pos <= std_logic_vector(random_row) & std_logic_vector(random_col);
         expanding <= '1';
+      end if;
+    end if;
+  end process;
+
+  -- Detect collisions with self
+  process(pixel_clock) begin
+    if rising_edge(pixel_clock) then
+      -- If the bitmap contains the next head position, the game ends
+      if snake_direction /= NONE and rendering_board_row = snake_next_head_row and rendering_board_col = snake_next_head_col and rendering_in_center = '1' and snake_at_rendered_pos = '1' then
+        game_over <= '1';
       end if;
     end if;
   end process;

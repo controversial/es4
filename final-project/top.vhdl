@@ -32,21 +32,31 @@ architecture synth of top is
       snake_here : in std_logic;
       rgb : out std_logic_vector(5 downto 0);
       board_row, board_col : out unsigned(5 downto 0);
+      in_center : out std_logic;
 
-      food_pos : in std_logic_vector(11 downto 0)
+      food_pos : in std_logic_vector(11 downto 0);
+
+      game_over : in std_logic
     );
   end component;
 
   component game_logic is
     port(
       btn_up, btn_down, btn_right, btn_left : in std_logic;
-      clk : in std_logic; game_clock : in std_logic;
+      clk : in std_logic; pixel_clock : in std_logic; game_clock : in std_logic;
 
       snake_head_pos : in std_logic_vector(11 downto 0);
       snake_next_head : out std_logic_vector(11 downto 0);
 
       food_pos : out std_logic_vector(11 downto 0);
-      expanding : out std_logic
+      expanding : out std_logic;
+
+      rendering_board_row : in unsigned(5 downto 0);
+      rendering_board_col : in unsigned(5 downto 0);
+      rendering_in_center : in std_logic;
+      snake_at_rendered_pos : in std_logic;
+
+      game_over : out std_logic
     );
   end component;
 
@@ -79,12 +89,15 @@ architecture synth of top is
   -- signals for game renderer
   signal rendering_board_row : unsigned(5 downto 0);
   signal rendering_board_col : unsigned(5 downto 0);
+  signal rendering_in_center : std_logic;
   signal rendering_pos : std_logic_vector(11 downto 0);
 
   signal snake_next_head : std_logic_vector(11 downto 0);
 
   signal food_pos : std_logic_vector(11 downto 0);
   signal expanding : std_logic;
+
+  signal game_over : std_logic;
 begin
   vga_driver: vga port map(
     clk => clk, -- input 12M
@@ -121,22 +134,32 @@ begin
 
     board_row => rendering_board_row,
     board_col => rendering_board_col,
+    in_center => rendering_in_center,
 
     snake_here => snake_at_rendered_pos,
 
-    food_pos => food_pos
+    food_pos => food_pos,
+
+    game_over => game_over
   );
   rendering_pos <= std_logic_vector(rendering_board_row) & std_logic_vector(rendering_board_col);
 
   game_logic_inst : game_logic port map(
     btn_up => not btn_up, btn_down => not btn_down, btn_left => not btn_left, btn_right => not btn_right,
-    clk => clk, game_clock => game_clock,
+    clk => clk, pixel_clock => pixel_clock, game_clock => game_clock,
 
     snake_head_pos => snake_head_pos,
     snake_next_head => snake_next_head,
 
     food_pos => food_pos,
 
-    expanding => expanding
+    expanding => expanding,
+
+    rendering_board_row => rendering_board_row,
+    rendering_board_col => rendering_board_col,
+    rendering_in_center => rendering_in_center,
+    snake_at_rendered_pos => snake_at_rendered_pos,
+
+    game_over => game_over
   );
 end;

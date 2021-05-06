@@ -8,8 +8,11 @@ entity game_renderer is
     snake_here : in std_logic;
     rgb : out std_logic_vector(5 downto 0);
     board_row, board_col : out unsigned(5 downto 0);
+    in_center : out std_logic;
 
-    food_pos : in std_logic_vector(11 downto 0)
+    food_pos : in std_logic_vector(11 downto 0);
+
+    game_over : in std_logic
   );
 end game_renderer;
 
@@ -30,13 +33,15 @@ begin
 
   board_row <= row(9 downto 4) - 4;
   board_col <= col(9 downto 4) - 2;
+  in_center <= '1' when col(3 downto 0) = "0111" and row(3 downto 0) = "0111" else '0';
   in_board <= '1' when board_row < 24 and board_col < 36 else '0';
 
   food_here <= '1' when board_row = unsigned(food_pos(11 downto 6)) and board_col = unsigned(food_pos(5 downto 0)) else '0';
 
   -- Set pixels based on row, col, and frame count
 
-  rgb <= "110000" when food_here and in_board else
+  rgb <= "110000" when game_over and in_board else
+         "110000" when food_here and in_board else
          "001101" when snake_here and in_board else
          "111111" when border else
          "000001" when debug_grid else
