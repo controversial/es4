@@ -79,9 +79,9 @@ begin
   process(pixel_clock) begin
     if rising_edge(pixel_clock) then
       -- If the bitmap contains the next head position, the game ends
-      if snake_direction /= NONE and rendering_board_row = snake_next_head_row and rendering_board_col = snake_next_head_col and rendering_in_center = '1' and snake_at_rendered_pos = '1' then
-        game_over <= '1';
-      end if;
+      -- if snake_direction /= NONE and rendering_board_row = snake_next_head_row and rendering_board_col = snake_next_head_col and rendering_in_center = '1' and snake_at_rendered_pos = '1' then
+      --   game_over <= '1';
+      -- end if;
 
       -- If we're crashing into the walls, the game ends
       if snake_head_row >= 24 or snake_head_col >= 36 then
