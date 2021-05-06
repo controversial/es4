@@ -85,6 +85,7 @@ architecture synth of top is
   -- signals for snake queue
   signal snake_head_pos : std_logic_vector(11 downto 0);
   signal snake_at_rendered_pos : std_logic;
+  signal snake_or_head_at_rendered_pos : std_logic;
 
   -- signals for game renderer
   signal rendering_board_row : unsigned(5 downto 0);
@@ -127,6 +128,9 @@ begin
     snake_here => snake_at_rendered_pos
   );
 
+  rendering_pos <= std_logic_vector(rendering_board_row) & std_logic_vector(rendering_board_col);
+  snake_or_head_at_rendered_pos <= '1' when (rendering_pos = snake_head_pos or snake_at_rendered_pos = '1') else '0';
+
   game_renderer_inst: game_renderer port map(
     row => row,
     col => col,
@@ -136,13 +140,12 @@ begin
     board_col => rendering_board_col,
     in_center => rendering_in_center,
 
-    snake_here => snake_at_rendered_pos,
+    snake_here => snake_or_head_at_rendered_pos,
 
     food_pos => food_pos,
 
     game_over => game_over
   );
-  rendering_pos <= std_logic_vector(rendering_board_row) & std_logic_vector(rendering_board_col);
 
   game_logic_inst : game_logic port map(
     btn_up => not btn_up, btn_down => not btn_down, btn_left => not btn_left, btn_right => not btn_right,
