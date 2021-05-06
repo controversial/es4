@@ -80,6 +80,11 @@ begin
       if snake_direction /= NONE and rendering_board_row = snake_next_head_row and rendering_board_col = snake_next_head_col and rendering_in_center = '1' and snake_at_rendered_pos = '1' then
         game_over <= '1';
       end if;
+
+      -- If we're crashing into the walls, the game ends
+      if snake_next_head_row >= 24 or snake_next_head_col >= 36 then
+        game_over <= '1';
+      end if;
     end if;
   end process;
 end;
