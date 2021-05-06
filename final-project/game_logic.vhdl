@@ -82,7 +82,7 @@ begin
       end if;
 
       -- If we're crashing into the walls, the game ends
-      if snake_next_head_row >= 24 or snake_next_head_col >= 36 then
+      if snake_head_row >= 24 or snake_head_col >= 36 then
         game_over <= '1';
       end if;
     end if;
