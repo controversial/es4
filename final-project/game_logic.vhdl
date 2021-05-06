@@ -24,7 +24,6 @@ end game_logic;
 
 architecture synth of game_logic is
   type DIRECTION is (NORTH, EAST, SOUTH, WEST, NONE);
-  signal last_button_press : DIRECTION := NONE;
   signal snake_direction : DIRECTION := NONE;
 
   signal snake_head_row, snake_head_col : unsigned(5 downto 0);
@@ -41,10 +40,10 @@ begin
 
   process(clk) begin
     if rising_edge(clk) then
-      if btn_up = '1' and snake_direction /= SOUTH then last_button_press <= NORTH;
-      elsif btn_down = '1' and snake_direction /= NORTH then last_button_press <= SOUTH;
-      elsif btn_left = '1' and snake_direction /= EAST and snake_direction /= NONE then last_button_press <= WEST;
-      elsif btn_right = '1' and snake_direction /= WEST then last_button_press <= EAST;
+      if btn_up = '1' and snake_direction /= SOUTH then snake_direction <= NORTH;
+      elsif btn_down = '1' and snake_direction /= NORTH then snake_direction <= SOUTH;
+      elsif btn_left = '1' and snake_direction /= EAST and snake_direction /= NONE then snake_direction <= WEST;
+      elsif btn_right = '1' and snake_direction /= WEST then snake_direction <= EAST;
       end if;
 
       random_pos_lfsr(0) <= random_pos_lfsr(10) xor random_pos_lfsr(9);
@@ -66,7 +65,6 @@ begin
 
   process(game_clock) begin
     if rising_edge(game_clock) then
-      snake_direction <= last_button_press;
       expanding <= '0';
       if snake_head_pos = food_pos then
         food_pos <= std_logic_vector(random_row) & std_logic_vector(random_col);
@@ -79,9 +77,9 @@ begin
   process(pixel_clock) begin
     if rising_edge(pixel_clock) then
       -- If the bitmap contains the next head position, the game ends
-      -- if snake_direction /= NONE and rendering_board_row = snake_next_head_row and rendering_board_col = snake_next_head_col and rendering_in_center = '1' and snake_at_rendered_pos = '1' then
-      --   game_over <= '1';
-      -- end if;
+      if snake_direction /= NONE and rendering_board_row = snake_next_head_row and rendering_board_col = snake_next_head_col and rendering_in_center = '1' and snake_at_rendered_pos = '1' then
+        game_over <= '1';
+      end if;
 
       -- If we're crashing into the walls, the game ends
       if snake_head_row >= 24 or snake_head_col >= 36 then
