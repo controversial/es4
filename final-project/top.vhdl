@@ -21,6 +21,7 @@ architecture synth of top is
       rgb : in std_logic_vector(5 downto 0);
       clk_pxl : out std_logic;
       row, col : out unsigned(9 downto 0);
+      blank_time : out std_logic;
       red1, red0, grn1, grn0, blu1, blu0 : out std_logic;
       hsync, vsync : out std_logic
     );
@@ -32,7 +33,6 @@ architecture synth of top is
       snake_here : in std_logic;
       rgb : out std_logic_vector(5 downto 0);
       board_row, board_col : out unsigned(5 downto 0);
-      in_center : out std_logic;
 
       food_pos : in std_logic_vector(11 downto 0);
 
@@ -51,10 +51,7 @@ architecture synth of top is
       food_pos : out std_logic_vector(11 downto 0);
       expanding : out std_logic;
 
-      rendering_board_row : in unsigned(5 downto 0);
-      rendering_board_col : in unsigned(5 downto 0);
-      rendering_in_center : in std_logic;
-      snake_at_rendered_pos : in std_logic;
+      bitmap_has_next_head : in std_logic;
 
       game_over : out std_logic
     );
@@ -77,6 +74,7 @@ architecture synth of top is
 
   signal pixel_clock : std_logic;
   signal row, col : unsigned(9 downto 0);
+  signal display_blank_time : std_logic;
   signal rgb : std_logic_vector(5 downto 0) := "000000";
 
   signal counter : unsigned(20 downto 0);
@@ -89,21 +87,24 @@ architecture synth of top is
   -- signals for game renderer
   signal rendering_board_row : unsigned(5 downto 0);
   signal rendering_board_col : unsigned(5 downto 0);
-  signal rendering_in_center : std_logic;
   signal rendering_pos : std_logic_vector(11 downto 0);
 
+  signal bitmap_query_pos : std_logic_vector(11 downto 0);
+
   signal snake_next_head : std_logic_vector(11 downto 0);
+  signal bitmap_has_next_head : std_logic;
 
   signal food_pos : std_logic_vector(11 downto 0);
   signal expanding : std_logic;
 
   signal game_over : std_logic;
 begin
-  vga_driver: vga port map(
+  vga_inst: vga port map(
     clk => clk, -- input 12M
 
     clk_pxl => pixel_clock, -- output clock per pixel
     row => row, col => col, -- output current block pos
+    blank_time => display_blank_time,
 
     rgb => rgb, -- input RGB
 
@@ -117,15 +118,17 @@ begin
   end process;
   game_clock <= counter(20);
 
+  bitmap_query_pos <= rendering_pos when not display_blank_time else snake_next_head;
   snake_queue_inst: snake_queue port map(
     mem_clk => pixel_clock,
     move_clk => game_clock,
     head => snake_head_pos,
     next_head => snake_next_head,
     expanding => expanding,
-    bitmap_pos => rendering_pos,
+    bitmap_pos => bitmap_query_pos,
     snake_here => snake_at_rendered_pos
   );
+  bitmap_has_next_head <= '1' when display_blank_time and snake_at_rendered_pos else '0';
 
   game_renderer_inst: game_renderer port map(
     row => row,
@@ -134,7 +137,6 @@ begin
 
     board_row => rendering_board_row,
     board_col => rendering_board_col,
-    in_center => rendering_in_center,
 
     snake_here => snake_at_rendered_pos,
 
@@ -150,15 +152,12 @@ begin
 
     snake_head_pos => snake_head_pos,
     snake_next_head => snake_next_head,
+    bitmap_has_next_head => bitmap_has_next_head,
 
     food_pos => food_pos,
 
     expanding => expanding,
 
-    rendering_board_row => rendering_board_row,
-    rendering_board_col => rendering_board_col,
-    rendering_in_center => rendering_in_center,
-    snake_at_rendered_pos => snake_at_rendered_pos,
 
     game_over => game_over
   );

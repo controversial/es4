@@ -9,14 +9,10 @@ entity game_logic is
 
     snake_head_pos : in std_logic_vector(11 downto 0);
     snake_next_head : out std_logic_vector(11 downto 0);
+    bitmap_has_next_head : in std_logic;
 
     food_pos : out std_logic_vector(11 downto 0) := "001011" & "010010"; -- center
     expanding : out std_logic := '0';
-
-    rendering_board_row : in unsigned(5 downto 0);
-    rendering_board_col : in unsigned(5 downto 0);
-    rendering_in_center : in std_logic;
-    snake_at_rendered_pos : in std_logic;
 
     game_over : out std_logic := '0'
   );
@@ -76,8 +72,7 @@ begin
   -- Detect collisions with self
   process(pixel_clock) begin
     if rising_edge(pixel_clock) then
-      -- If the bitmap contains the next head position, the game ends
-      if snake_direction /= NONE and rendering_board_row = snake_next_head_row and rendering_board_col = snake_next_head_col and rendering_in_center = '1' and snake_at_rendered_pos = '1' then
+      if snake_direction /= NONE and bitmap_has_next_head = '1' then
         game_over <= '1';
       end if;
 

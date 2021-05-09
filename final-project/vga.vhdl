@@ -11,6 +11,7 @@ entity vga is
     -- Output: clock in terms of pixels, current position
     clk_pxl : out std_logic;
     row, col : out unsigned(9 downto 0);
+    blank_time : out std_logic;
 
     -- Output: signals to route to pins
     red1, red0, grn1, grn0, blu1, blu0 : out std_logic;
@@ -59,6 +60,7 @@ begin
 
   col <= col_counter - (HORIZ_SYNC + HORIZ_BACK_PORCH) when col_visible else "0000000000";
   row <= row_counter - (VERT_SYNC + VERT_BACK_PORCH) when row_visible else "0000000000";
+  blank_time <= not row_visible;
 
   process(clk_pxl) begin
     if rising_edge(clk_pxl) then
