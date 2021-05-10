@@ -68,10 +68,12 @@ begin
   end process;
 
   -- Move snake based on its direction
-  snake_next_head_row <= snake_head_row - 6d"1" when snake_direction = NORTH else
+  snake_next_head_row <= snake_head_row when game_over else
+                         snake_head_row - 6d"1" when snake_direction = NORTH else
                          snake_head_row + 6d"1" when snake_direction = SOUTH else
                          snake_head_row;
-  snake_next_head_col <= snake_head_col - 6d"1" when snake_direction = WEST else
+  snake_next_head_col <= snake_head_col when game_over else
+                         snake_head_col - 6d"1" when snake_direction = WEST else
                          snake_head_col + 6d"1" when snake_direction = EAST else
                          snake_head_col;
 
