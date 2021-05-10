@@ -43,8 +43,8 @@ begin
 
   -- Set pixels based on row, col, and frame count
 
-  rgb <= "001101" when snake_here and in_board else
-         "110000" when food_here and in_board and not debug_grid else
+  rgb <= "110000" when food_here and in_board and not debug_grid else
+         "001101" when snake_here and in_board else
          "111111" when border else
          "110000" when game_over and not in_board else
          "000001" when debug_grid else
