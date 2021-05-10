@@ -37,6 +37,7 @@ architecture synth of snake_queue is
   signal tail_addr_q : integer := 0;
   signal prev_tail_addr_q : integer := 0;
   signal head_addr_q : integer := 2;
+  signal next_head_addr_q : integer := 3;
   -- row (11 downto 6) and col (5 downto 0) of tail and head
   signal prev_tail : std_logic_vector(11 downto 0);
   signal tail : std_logic_vector(11 downto 0);
@@ -65,6 +66,7 @@ architecture synth of snake_queue is
   signal which_bitmap_update : std_logic := '0';
 begin
   prev_tail_addr_q <= 863 when tail_addr_q = 0 else tail_addr_q - 1;
+  next_head_addr_q <= head_addr_q + 1 when head_addr_q < 863 else 0;
   -- Find addresses of tail, head, and read address within bitmap
   -- row * 36 + col
   tail_addr_b <= (to_integer(unsigned(tail(11 downto 6))) * 36) + (to_integer(unsigned(tail(5 downto 0))));
@@ -91,11 +93,11 @@ begin
 
   process(move_clk) is begin
     if rising_edge(move_clk) then
-      queue(head_addr_q + 1) <= next_head;
-      head_addr_q <= head_addr_q + 1 when head_addr_q <= 863 else 0;
+      queue(next_head_addr_q) <= next_head;
+      head_addr_q <= head_addr_q + 1 when head_addr_q < 863 else 0;
       -- when the snake is "expanding," the tail stays fixed and only the head moves.
       if (expanding = '0') then
-        tail_addr_q <= tail_addr_q + 1 when tail_addr_q <= 863 else 0;
+        tail_addr_q <= tail_addr_q + 1 when tail_addr_q < 863 else 0;
       end if;
     end if;
   end process;
