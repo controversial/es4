@@ -26,9 +26,9 @@ architecture synth of game_renderer is
   signal board_row_raw : unsigned(5 downto 0);
   signal board_col_raw : unsigned(5 downto 0);
 begin
-  border <= '1' when (row >= 62 and row <= 63 and col >= 30 and col <= 609)
+  border <= '1' when (row >= 62  and row <= 63  and col >= 30 and col <= 609)
                   or (row >= 448 and row <= 449 and col >= 30 and col <= 609)
-                  or (col >= 30 and col <= 31 and row >= 62 and row <= 449)
+                  or (col >= 30  and col <= 31  and row >= 62 and row <= 449)
                   or (col >= 608 and col <= 609 and row >= 63 and row <= 449)
             else '0';
   debug_grid <= '1' when row(3 downto 0) = "0000" or col(3 downto 0) = "0000" else '0';
@@ -43,10 +43,10 @@ begin
 
   -- Set pixels based on row, col, and frame count
 
-  rgb <= "110000" when game_over and in_board else
-         "001101" when snake_here and in_board else
+  rgb <= "001101" when snake_here and in_board else
          "110000" when food_here and in_board and not debug_grid else
          "111111" when border else
+         "110000" when game_over and not in_board else
          "000001" when debug_grid else
          "000000";
 end;
