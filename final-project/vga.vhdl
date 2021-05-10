@@ -60,7 +60,7 @@ begin
 
   col <= col_counter - (HORIZ_SYNC + HORIZ_BACK_PORCH) when col_visible else "0000000000";
   row <= row_counter - (VERT_SYNC + VERT_BACK_PORCH) when row_visible else "0000000000";
-  blank_time <= not row_visible;
+  blank_time <= not (row_visible and col_visible);
 
   process(clk_pxl) begin
     if rising_edge(clk_pxl) then
