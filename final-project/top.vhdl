@@ -61,6 +61,7 @@ architecture synth of top is
     port(
       mem_clk: in std_logic;
       move_clk : in std_logic;
+      freeze : in std_logic;
       -- Output where the current head is
       head : out std_logic_vector(11 downto 0);
       -- Input information about how the snake moves
@@ -122,6 +123,7 @@ begin
   snake_queue_inst: snake_queue port map(
     mem_clk => pixel_clock,
     move_clk => game_clock,
+    freeze => game_over, -- stop moving when game over
     head => snake_head_pos,
     next_head => snake_next_head,
     expanding => expanding,

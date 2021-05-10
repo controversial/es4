@@ -11,6 +11,7 @@ entity snake_queue is
   port(
     mem_clk : in std_logic;
     move_clk : in std_logic;
+    freeze : in std_logic;
     -- Output where the current head is
     head : out std_logic_vector(11 downto 0);
     -- Input information about how the snake moves
@@ -107,7 +108,7 @@ begin
   end process;
 
   process(move_clk) is begin
-    if rising_edge(move_clk) then
+    if rising_edge(move_clk) and freeze /= '1' then
       queue(next_head_addr_q) <= next_head;
       head_addr_q <= head_addr_q + 1 when head_addr_q < 863 else 0;
       -- when the snake is "expanding," the tail stays fixed and only the head moves.
