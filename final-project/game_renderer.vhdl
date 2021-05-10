@@ -22,6 +22,9 @@ architecture synth of game_renderer is
   signal debug_grid : std_logic := '0';
   signal in_board : std_logic;
   signal food_here : std_logic;
+
+  signal board_row_raw : unsigned(5 downto 0);
+  signal board_col_raw : unsigned(5 downto 0);
 begin
   border <= '1' when (row >= 62 and row <= 63 and col >= 30 and col <= 609)
                   or (row >= 448 and row <= 449 and col >= 30 and col <= 609)
@@ -30,8 +33,10 @@ begin
             else '0';
   debug_grid <= '1' when row(3 downto 0) = "0000" or col(3 downto 0) = "0000" else '0';
 
-  board_row <= row(9 downto 4) - 4;
-  board_col <= col(9 downto 4) - 2;
+  board_row_raw <= row(9 downto 4);
+  board_col_raw <= col(9 downto 4);
+  board_row <= board_row_raw - 4 when board_row_raw >= 4 and board_row_raw < 28 else 6d"24";
+  board_col <= board_col_raw - 2 when board_col_raw >= 2 and board_col_raw < 38 else 6d"36";
   in_board <= '1' when board_row < 24 and board_col < 36 else '0';
 
   food_here <= '1' when board_row = unsigned(food_pos(11 downto 6)) and board_col = unsigned(food_pos(5 downto 0)) else '0';
