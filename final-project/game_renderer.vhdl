@@ -8,7 +8,6 @@ entity game_renderer is
     snake_here : in std_logic;
     rgb : out std_logic_vector(5 downto 0);
     board_row, board_col : out unsigned(5 downto 0);
-    in_center : out std_logic;
 
     food_pos : in std_logic_vector(11 downto 0);
 
@@ -33,7 +32,6 @@ begin
 
   board_row <= row(9 downto 4) - 4;
   board_col <= col(9 downto 4) - 2;
-  in_center <= '1' when col(3 downto 0) = "0111" and row(3 downto 0) = "0111" else '0';
   in_board <= '1' when board_row < 24 and board_col < 36 else '0';
 
   food_here <= '1' when board_row = unsigned(food_pos(11 downto 6)) and board_col = unsigned(food_pos(5 downto 0)) else '0';
