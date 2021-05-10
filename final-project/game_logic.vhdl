@@ -83,30 +83,32 @@ begin
 
   process(game_clock) begin
     if rising_edge(game_clock) then
-      expanding <= '0';
-      if snake_head_pos = food_pos then
-        food_pos <= std_logic_vector(random_row) & std_logic_vector(random_col);
-        expanding <= '1';
-      end if;
 
       last_direction_moved <= snake_direction;
     end if;
   end process;
 
-  -- Detect collisions to set game_over
+  -- Detect collisions to eat food and to set game_over
   process(pixel_clock) begin
+    -- Game over can only occur in the instant right before the snake moves
     if rising_edge(pixel_clock) then
-      -- Game over can only occur in the instant right before the snake moves
-      if pre_game_clock then
+      if pre_game_clock = '1' then
+        -- Detect self-collisions
         if snake_direction /= NONE and bitmap_has_next_head = '1' then
           game_over <= '1';
         end if;
-
-        -- If we're crashing into the walls, the game ends
+        -- Detect wall collisions
         if snake_next_head_row >= 24 or snake_next_head_col >= 36 then
           game_over <= '1';
         end if;
+        -- Detect food collisions
+        if snake_next_head = food_pos and game_clock = '0' then
+          food_pos <= std_logic_vector(random_row) & std_logic_vector(random_col);
+          expanding <= '1';
+        end if;
       end if;
+      -- Reset expanding to 0 after the snake has expanded (i.e. once the game clock goes to 1)
+      if game_clock then expanding <= '0'; end if;
     end if;
   end process;
 end;
