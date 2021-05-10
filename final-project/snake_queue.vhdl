@@ -58,6 +58,20 @@ architecture synth of snake_queue is
   signal prev_tail_addr_b: integer;
   signal head_addr_b: integer;
   signal new_head_addr_b: integer;
+  -- Convert 12-bit row/col positions to bitmap addresses
+  function min(a : integer; b : integer) return integer is
+  begin
+    if a < b then return a; else return b; end if;
+  end function;
+  function rowcol_to_bitmap(rowcol : std_logic_vector(11 downto 0)) return integer is
+    variable clamped_row : integer := 0;
+    variable clamped_col : integer := 0;
+  begin
+    -- Sane overflow behavior: don't allow out-of-bounds addresses to map to the next row
+    clamped_row := min(to_integer(unsigned(rowcol(11 downto 6))), 23);
+    clamped_col := min(to_integer(unsigned(rowcol(5 downto 0))), 35);
+    return clamped_row * 36 + clamped_col;
+  end function;
 
   -- Signals to schedule bitmap updates to happen on the clock
   -- Bitmap updates happen one at a time: the head is added on one clock cycle, and the tail is
@@ -69,11 +83,12 @@ begin
   next_head_addr_q <= head_addr_q + 1 when head_addr_q < 863 else 0;
   -- Find addresses of tail, head, and read address within bitmap
   -- row * 36 + col
-  tail_addr_b <= (to_integer(unsigned(tail(11 downto 6))) * 36) + (to_integer(unsigned(tail(5 downto 0))));
-  prev_tail_addr_b <= (to_integer(unsigned(prev_tail(11 downto 6))) * 36) + (to_integer(unsigned(prev_tail(5 downto 0))));
-  head_addr_b <= (to_integer(unsigned(head(11 downto 6))) * 36) + (to_integer(unsigned(head(5 downto 0))));
-  new_head_addr_b <= (to_integer(unsigned(next_head(11 downto 6))) * 36) + (to_integer(unsigned(next_head(5 downto 0))));
-  bitmap_read_addr <= (to_integer(unsigned(bitmap_pos(11 downto 6))) * 36) + (to_integer(unsigned(bitmap_pos(5 downto 0))));
+  tail_addr_b <= rowcol_to_bitmap(tail);
+  prev_tail_addr_b <= rowcol_to_bitmap(prev_tail);
+  head_addr_b <= rowcol_to_bitmap(head);
+  new_head_addr_b <= rowcol_to_bitmap(next_head);
+  bitmap_read_addr <= rowcol_to_bitmap(bitmap_pos);
+  -- Update head in bitmap when we're setting to 1; update tail when we're setting to 0
   bitmap_update_addr <= head_addr_b when which_bitmap_update = '1' else prev_tail_addr_b;
 
   process(mem_clk) begin
