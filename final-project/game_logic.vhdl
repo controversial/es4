@@ -5,7 +5,7 @@ use IEEE.numeric_std.all;
 entity game_logic is
   port(
     btn_up, btn_down, btn_right, btn_left : in std_logic;
-    clk : in std_logic; pixel_clock : in std_logic; game_clock : in std_logic;
+    clk : in std_logic; pixel_clock : in std_logic; game_clock : in std_logic; pre_game_clock : in std_logic;
 
     snake_head_pos : in std_logic_vector(11 downto 0);
     snake_next_head : out std_logic_vector(11 downto 0);
@@ -93,16 +93,19 @@ begin
     end if;
   end process;
 
-  -- Detect collisions with self
+  -- Detect collisions to set game_over
   process(pixel_clock) begin
     if rising_edge(pixel_clock) then
-      if snake_direction /= NONE and bitmap_has_next_head = '1' then
-        game_over <= '1';
-      end if;
+      -- Game over can only occur in the instant right before the snake moves
+      if pre_game_clock then
+        if snake_direction /= NONE and bitmap_has_next_head = '1' then
+          game_over <= '1';
+        end if;
 
-      -- If we're crashing into the walls, the game ends
-      if snake_head_row >= 24 or snake_head_col >= 36 then
-        game_over <= '1';
+        -- If we're crashing into the walls, the game ends
+        if snake_next_head_row >= 24 or snake_next_head_col >= 36 then
+          game_over <= '1';
+        end if;
       end if;
     end if;
   end process;

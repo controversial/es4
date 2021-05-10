@@ -43,7 +43,8 @@ architecture synth of top is
   component game_logic is
     port(
       btn_up, btn_down, btn_right, btn_left : in std_logic;
-      clk : in std_logic; pixel_clock : in std_logic; game_clock : in std_logic;
+      clk : in std_logic; pixel_clock : in std_logic;
+      game_clock : in std_logic; pre_game_clock : in std_logic;
 
       snake_head_pos : in std_logic_vector(11 downto 0);
       snake_next_head : out std_logic_vector(11 downto 0);
@@ -80,6 +81,7 @@ architecture synth of top is
 
   signal counter : unsigned(20 downto 0);
   signal game_clock : std_logic;
+  signal pre_game_clock : std_logic;
 
   -- signals for snake queue
   signal snake_head_pos : std_logic_vector(11 downto 0);
@@ -118,6 +120,8 @@ begin
     if rising_edge(pixel_clock) then counter <= counter + 1; end if;
   end process;
   game_clock <= counter(20);
+  -- up for a short time before game_clock rises
+  pre_game_clock <= '1' when counter > "011111000000000000000" and counter < "100000000000000000000" else '0';
 
   bitmap_query_pos <= rendering_pos when not display_blank_time else snake_next_head;
   snake_queue_inst: snake_queue port map(
@@ -150,7 +154,7 @@ begin
 
   game_logic_inst : game_logic port map(
     btn_up => not btn_up, btn_down => not btn_down, btn_left => not btn_left, btn_right => not btn_right,
-    clk => clk, pixel_clock => pixel_clock, game_clock => game_clock,
+    clk => clk, pixel_clock => pixel_clock, game_clock => game_clock, pre_game_clock => pre_game_clock,
 
     snake_head_pos => snake_head_pos,
     snake_next_head => snake_next_head,
