@@ -22,6 +22,8 @@ architecture synth of game_logic is
   type DIRECTION is (NORTH, EAST, SOUTH, WEST, NONE);
   signal snake_direction : DIRECTION := NONE;
   signal last_direction_moved : DIRECTION := NONE;
+  signal button_pressed : DIRECTION := NONE;
+  signal button_counter : unsigned(16 downto 0) := 17d"0";
 
   signal snake_head_row, snake_head_col : unsigned(5 downto 0);
   signal snake_next_head_row, snake_next_head_col : unsigned(5 downto 0) := 6d"0";
@@ -37,12 +39,29 @@ begin
 
   process(clk) begin
     if rising_edge(clk) then
-      if btn_up = '1' and last_direction_moved /= SOUTH then snake_direction <= NORTH;
-      elsif btn_down = '1' and last_direction_moved /= NORTH then snake_direction <= SOUTH;
-      elsif btn_left = '1' and last_direction_moved /= EAST then snake_direction <= WEST;
-      elsif btn_right = '1' and last_direction_moved /= WEST then snake_direction <= EAST;
+      if btn_up = '1' and snake_direction /= SOUTH and last_direction_moved /= SOUTH then button_pressed <= NORTH;
+      elsif btn_down = '1' and snake_direction /= NORTH and last_direction_moved /= NORTH then button_pressed <= SOUTH;
+      elsif btn_left = '1' and snake_direction /= EAST and last_direction_moved /= EAST then button_pressed <= WEST;
+      elsif btn_right = '1' and snake_direction /= WEST and last_direction_moved /= WEST then button_pressed <= EAST;
+      else button_pressed <= NONE;
       end if;
 
+      if button_pressed /= NONE then
+        -- increment counter
+        button_counter <= button_counter + 1;
+        if button_counter = "11111111111111111" then
+          snake_direction <= button_pressed;
+        end if;
+      -- Button was released
+      else
+        button_counter <= 17d"0";
+      end if;
+    end if;
+  end process;
+
+  -- Always cycling through random numbers
+  process(clk) begin
+    if rising_edge(clk) then
       random_pos_lfsr(0) <= random_pos_lfsr(10) xor random_pos_lfsr(9);
       random_pos_lfsr(10 downto 1) <= random_pos_lfsr(9 downto 0);
     end if;
