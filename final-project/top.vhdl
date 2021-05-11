@@ -39,7 +39,10 @@ architecture synth of top is
       snake_head_pos : in std_logic_vector(11 downto 0);
       snake_direction : in DIRECTION;
 
-      game_over : in std_logic
+      game_score : in unsigned(9 downto 0);
+      game_over : in std_logic;
+
+      clock : in std_logic
     );
   end component;
 
@@ -158,7 +161,10 @@ begin
 
     food_pos => food_pos,
 
-    game_over => game_over
+    game_score => game_score,
+    game_over => game_over,
+
+    clock => game_clock
   );
   rendering_pos <= std_logic_vector(rendering_board_row) & std_logic_vector(rendering_board_col);
 

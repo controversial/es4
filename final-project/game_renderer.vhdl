@@ -14,7 +14,10 @@ entity game_renderer is
     snake_head_pos : in std_logic_vector(11 downto 0);
     snake_direction : in DIRECTION;
 
-    game_over : in std_logic
+    game_score : in unsigned(9 downto 0);
+    game_over : in std_logic;
+
+    clock : in std_logic
   );
 end game_renderer;
 
@@ -25,6 +28,17 @@ architecture synth of game_renderer is
       row : in unsigned(2 downto 0); -- 0 through 6
       col : in unsigned(2 downto 0); -- 0 through 5
       pixel : out std_logic
+    );
+  end component;
+
+  component triple_digit_decoder is
+    port(
+      number : in unsigned(9 downto 0);
+      hundreds : out unsigned(3 downto 0);
+      tens : out unsigned(3 downto 0);
+      ones : out unsigned(3 downto 0);
+
+      clock : in std_logic
     );
   end component;
 
@@ -39,6 +53,10 @@ architecture synth of game_renderer is
   signal board_row_raw : unsigned(5 downto 0);
   signal board_col_raw : unsigned(5 downto 0);
 
+  -- Number rendering
+  signal game_score_ones : unsigned(3 downto 0);
+  signal game_score_tens : unsigned(3 downto 0);
+  signal game_score_hundreds : unsigned(3 downto 0);
   signal number_pixel_on : std_logic;
   signal number_row, number_col : unsigned(9 downto 0);
   signal number_to_render : unsigned(3 downto 0);
@@ -85,14 +103,21 @@ begin
     else '0';
 
 
+  triple_digit_decoder_inst : triple_digit_decoder port map(
+    number => game_score,
+    ones => game_score_ones,
+    tens => game_score_tens,
+    hundreds => game_score_hundreds,
+    clock => clock
+  );
+
   -- Least significant score digit: col 603–608, row 46–53
   -- Middle            score digit: col 593–598, row 46–53
   -- Most  significant score digit: col 583–588, row 46–53
 
-
-  number_to_render <= 4d"1" when col >= 583 and col <= 588 and row >= 46 and row <= 52 else
-                      4d"2" when col >= 593 and col <= 598 and row >= 46 and row <= 52 else
-                      4d"3" when col >= 603 and col <= 608 and row >= 46 and row <= 52 else
+  number_to_render <= game_score_hundreds when col >= 583 and col <= 588 and row >= 46 and row <= 52 else
+                      game_score_tens when col >= 593 and col <= 598 and row >= 46 and row <= 52 else
+                      game_score_ones when col >= 603 and col <= 608 and row >= 46 and row <= 52 else
                       4d"10"; -- renders as blank since it's outside of 0–9
 
   number_row <= row - 10d"46";
