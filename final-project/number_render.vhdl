@@ -19,7 +19,7 @@ begin
             "001100001100011100001100001100001100111111" when number = 4d"1" else
             "011110110011000011000110011000110000111111" when number = 4d"2" else
             "011110110011000011001110000011110011011110" when number = 4d"3" else
-            "000011" & "000111" & "001111" & "110011" & "111111" & "000110" & "000110" when number = 4d"4" else
+            "000011" & "000111" & "001111" & "110011" & "111111" & "000011" & "000011" when number = 4d"4" else
             "111111" & "110000" & "111110" & "000011" & "000011" & "110011" & "011110" when number = 4d"5" else
             "011110" & "110011" & "110000" & "111110" & "110011" & "110011" & "011110" when number = 4d"6" else
             "111111" & "110011" & "000110" & "001100" & "001100" & "001100" & "001100" when number = 4d"7" else
@@ -29,4 +29,41 @@ begin
 
   pos <= to_integer(row) * 6 + to_integer(col);
   pixel <= bitmap(pos);
+end;
+
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+entity triple_digit_decoder is
+  port(
+    number : in unsigned(9 downto 0);
+    hundreds : out unsigned(3 downto 0);
+    tens : out unsigned(3 downto 0);
+    ones : out unsigned(3 downto 0);
+    clock : in std_logic
+  );
+end triple_digit_decoder;
+
+architecture synth of triple_digit_decoder is
+  signal temp1 : unsigned(15 downto 0);
+  signal temp2 : unsigned(6 downto 0);
+  signal temp3 : unsigned(12 downto 0);
+  signal temp4 : unsigned(3 downto 0);
+begin
+  process (clock) begin
+    if rising_edge(clock) then
+      ones <= number mod 4d"10";
+
+      temp1 <= number * 6d"52";
+      temp2 <= temp1(15 downto 9);
+      tens <= temp2 mod 4d"10";
+
+      temp3 <= temp2 * 6d"52";
+      temp4 <= temp3(12 downto 9);
+      hundreds <= temp4 mod 4d"10";
+    end if;
+  end process;
+
 end;
