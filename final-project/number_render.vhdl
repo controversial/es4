@@ -47,21 +47,22 @@ entity triple_digit_decoder is
 end triple_digit_decoder;
 
 architecture synth of triple_digit_decoder is
-  signal temp1 : unsigned(15 downto 0);
-  signal temp2 : unsigned(6 downto 0);
-  signal temp3 : unsigned(12 downto 0);
-  signal temp4 : unsigned(3 downto 0);
 begin
-  process (clock) begin
+  process (clock) is
+    variable temp1 : unsigned(15 downto 0);
+    variable temp2 : unsigned(6 downto 0);
+    variable temp3 : unsigned(12 downto 0);
+    variable temp4 : unsigned(3 downto 0);
+  begin
     if rising_edge(clock) then
       ones <= number mod 4d"10";
 
-      temp1 <= number * 6d"52";
-      temp2 <= temp1(15 downto 9);
+      temp1 := number * 6d"52";
+      temp2 := temp1(15 downto 9);
       tens <= temp2 mod 4d"10";
 
-      temp3 <= temp2 * 6d"52";
-      temp4 <= temp3(12 downto 9);
+      temp3 := temp2 * 6d"52";
+      temp4 := temp3(12 downto 9);
       hundreds <= temp4 mod 4d"10";
     end if;
   end process;
