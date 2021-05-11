@@ -46,6 +46,7 @@ architecture synth of top is
       clk : in std_logic; pixel_clock : in std_logic;
       game_clock : in std_logic; pre_game_clock : in std_logic;
 
+      game_started : out std_logic;
       snake_head_pos : in std_logic_vector(11 downto 0);
       snake_next_head : out std_logic_vector(11 downto 0);
 
@@ -100,6 +101,7 @@ architecture synth of top is
   signal food_pos : std_logic_vector(11 downto 0);
   signal expanding : std_logic;
 
+  signal game_started : std_logic;
   signal game_over : std_logic;
 begin
   vga_inst: vga port map(
@@ -127,7 +129,7 @@ begin
   snake_queue_inst: snake_queue port map(
     mem_clk => pixel_clock,
     move_clk => game_clock,
-    freeze => game_over, -- stop moving when game over
+    freeze => game_over or not game_started, -- stop moving when game over
     head => snake_head_pos,
     next_head => snake_next_head,
     expanding => expanding,
@@ -156,6 +158,7 @@ begin
     btn_up => not btn_up, btn_down => not btn_down, btn_left => not btn_left, btn_right => not btn_right,
     clk => clk, pixel_clock => pixel_clock, game_clock => game_clock, pre_game_clock => pre_game_clock,
 
+    game_started => game_started,
     snake_head_pos => snake_head_pos,
     snake_next_head => snake_next_head,
     bitmap_has_next_head => bitmap_has_next_head,

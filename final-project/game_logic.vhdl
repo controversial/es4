@@ -7,6 +7,7 @@ entity game_logic is
     btn_up, btn_down, btn_right, btn_left : in std_logic;
     clk : in std_logic; pixel_clock : in std_logic; game_clock : in std_logic; pre_game_clock : in std_logic;
 
+    game_started : out std_logic := '0';
     snake_head_pos : in std_logic_vector(11 downto 0);
     snake_next_head : out std_logic_vector(11 downto 0);
     bitmap_has_next_head : in std_logic;
@@ -20,7 +21,7 @@ end game_logic;
 
 architecture synth of game_logic is
   type DIRECTION is (NORTH, EAST, SOUTH, WEST, NONE);
-  signal snake_direction : DIRECTION := NONE;
+  signal snake_direction : DIRECTION := EAST;
   signal last_direction_moved : DIRECTION := NONE;
   signal button_pressed : DIRECTION := NONE;
   signal button_counter : unsigned(16 downto 0) := 17d"0";
@@ -47,6 +48,7 @@ begin
       end if;
 
       if button_pressed /= NONE then
+        game_started <= '1';
         -- increment counter
         button_counter <= button_counter + 1;
         if button_counter = "11111111111111111" then
