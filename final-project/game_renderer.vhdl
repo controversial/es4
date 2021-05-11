@@ -19,6 +19,14 @@ entity game_renderer is
 end game_renderer;
 
 architecture synth of game_renderer is
+  component number_render is
+    port(
+      number : in unsigned(3 downto 0); -- 0 through 9
+      row : in unsigned(2 downto 0); -- 0 through 6
+      col : in unsigned(2 downto 0); -- 0 through 5
+      pixel : out std_logic
+    );
+  end component;
 
   -- Elements to render
   signal border : std_logic := '0';
@@ -30,6 +38,10 @@ architecture synth of game_renderer is
 
   signal board_row_raw : unsigned(5 downto 0);
   signal board_col_raw : unsigned(5 downto 0);
+
+  signal number_pixel_on : std_logic;
+  signal number_row, number_col : unsigned(9 downto 0);
+  signal number_to_render : unsigned(3 downto 0);
 
   function dist(row_a : unsigned(3 downto 0); col_a : unsigned(3 downto 0); row_b : std_logic_vector(3 downto 0); col_b : std_logic_vector(3 downto 0)) return signed is
     variable row_a_i : signed(5 downto 0);
@@ -72,9 +84,34 @@ begin
     )
     else '0';
 
+
+  -- Least significant score digit: col 603–608, row 46–53
+  -- Middle            score digit: col 593–598, row 46–53
+  -- Most  significant score digit: col 583–588, row 46–53
+
+
+  number_to_render <= 4d"1" when col >= 583 and col <= 588 and row >= 46 and row <= 52 else
+                      4d"2" when col >= 593 and col <= 598 and row >= 46 and row <= 52 else
+                      4d"3" when col >= 603 and col <= 608 and row >= 46 and row <= 52 else
+                      4d"10"; -- renders as blank since it's outside of 0–9
+
+  number_row <= row - 10d"46";
+  number_col <= col - 10d"583" when col >= 583 and col <= 588 else
+                col - 10d"593" when col >= 593 and col <= 598 else
+                col - 10d"603" when col >= 603 and col <= 608 else
+                col;
+
+  number_render_inst : number_render port map(
+    number => number_to_render,
+    row => number_row(2 downto 0),
+    col => number_col(2 downto 0),
+    pixel => number_pixel_on
+  );
+
   -- Set pixels based on row, col, and frame count
 
-  rgb <= "110000" when food_here and in_board and not debug_grid else
+  rgb <= "111111" when number_pixel_on else
+         "110000" when food_here and in_board and not debug_grid else
          "000100" when eyes_here and in_board else
          "001101" when snake_here and in_board else
          "111111" when border else
