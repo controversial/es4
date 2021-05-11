@@ -1,6 +1,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
+use work.snake_types.all;
 
 entity top is
   port(
@@ -35,6 +36,8 @@ architecture synth of top is
       board_row, board_col : out unsigned(5 downto 0);
 
       food_pos : in std_logic_vector(11 downto 0);
+      snake_head_pos : in std_logic_vector(11 downto 0);
+      snake_direction : in DIRECTION;
 
       game_over : in std_logic
     );
@@ -47,6 +50,7 @@ architecture synth of top is
       game_clock : in std_logic; pre_game_clock : in std_logic;
 
       game_started : out std_logic;
+      snake_direction : out DIRECTION;
       snake_head_pos : in std_logic_vector(11 downto 0);
       snake_next_head : out std_logic_vector(11 downto 0);
 
@@ -85,6 +89,7 @@ architecture synth of top is
   signal pre_game_clock : std_logic;
 
   -- signals for snake queue
+  signal snake_direction : DIRECTION;
   signal snake_head_pos : std_logic_vector(11 downto 0);
   signal snake_at_rendered_pos : std_logic;
 
@@ -147,6 +152,8 @@ begin
     board_col => rendering_board_col,
 
     snake_here => snake_at_rendered_pos,
+    snake_head_pos => snake_head_pos,
+    snake_direction => snake_direction,
 
     food_pos => food_pos,
 
@@ -159,6 +166,7 @@ begin
     clk => clk, pixel_clock => pixel_clock, game_clock => game_clock, pre_game_clock => pre_game_clock,
 
     game_started => game_started,
+    snake_direction => snake_direction,
     snake_head_pos => snake_head_pos,
     snake_next_head => snake_next_head,
     bitmap_has_next_head => bitmap_has_next_head,

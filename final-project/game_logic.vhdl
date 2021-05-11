@@ -1,6 +1,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
+use work.snake_types.all;
 
 entity game_logic is
   port(
@@ -8,6 +9,7 @@ entity game_logic is
     clk : in std_logic; pixel_clock : in std_logic; game_clock : in std_logic; pre_game_clock : in std_logic;
 
     game_started : out std_logic := '0';
+    snake_direction : out DIRECTION := EAST;
     snake_head_pos : in std_logic_vector(11 downto 0);
     snake_next_head : out std_logic_vector(11 downto 0);
     bitmap_has_next_head : in std_logic;
@@ -20,8 +22,6 @@ entity game_logic is
 end game_logic;
 
 architecture synth of game_logic is
-  type DIRECTION is (NORTH, EAST, SOUTH, WEST, NONE);
-  signal snake_direction : DIRECTION := EAST;
   signal last_direction_moved : DIRECTION := NONE;
   signal button_pressed : DIRECTION := NONE;
   signal button_counter : unsigned(16 downto 0) := 17d"0";
