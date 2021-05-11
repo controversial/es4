@@ -92,6 +92,7 @@ architecture synth of top is
   signal snake_direction : DIRECTION;
   signal snake_head_pos : std_logic_vector(11 downto 0);
   signal snake_at_rendered_pos : std_logic;
+  signal expanding : std_logic;
 
   -- signals for game renderer
   signal rendering_board_row : unsigned(5 downto 0);
@@ -104,10 +105,10 @@ architecture synth of top is
   signal bitmap_has_next_head : std_logic;
 
   signal food_pos : std_logic_vector(11 downto 0);
-  signal expanding : std_logic;
 
   signal game_started : std_logic;
   signal game_over : std_logic;
+  signal game_score : unsigned(9 downto 0) := 10d"0";
 begin
   vga_inst: vga port map(
     clk => clk, -- input 12M
@@ -178,4 +179,11 @@ begin
 
     game_over => game_over
   );
+
+  -- Increment game score each time expanding flips to 1
+  process(game_clock) begin
+    if rising_edge(game_clock) and expanding = '1' then
+      game_score <= game_score + 1;
+    end if;
+  end process;
 end;
